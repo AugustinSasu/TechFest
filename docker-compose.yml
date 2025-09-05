@@ -1,0 +1,23 @@
+# docker-compose.yml
+services:
+  oracle-db:
+    container_name: vw-db
+    image: container-registry.oracle.com/database/free:latest
+    ports:
+      - "1521:1521"   # SQL*Net
+      - "5500:5500"   # EM Express (optional)
+    environment:
+    # password is in .env file
+      ORACLE_PWD: ${ORACLE_PWD}
+      ORACLE_PDB: FREEPDB1
+      ORACLE_SID: FREE
+    volumes:
+    #  copies the vwvolume stored in the host to the container at path /opt/oracle/vwvolume
+      - vwvolume:/opt/oracle/vwvolume
+    healthcheck:
+      test: ["CMD", "bash", "-lc", "echo 'select 1 from dual;' | sqlplus -s sys/\"$ORACLE_PWD\"@localhost:1521/FREEPDB1 as sysdba | grep -q 1"]
+      interval: 20s
+      timeout: 10s
+      retries: 30
+volumes:
+  vwvolume:
