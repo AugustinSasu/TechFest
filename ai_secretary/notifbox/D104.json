@@ -1,0 +1,27 @@
+{
+  "type": "sales_nudge",
+  "audience": "individual",
+  "dealer_id": "D104",
+  "region": "DE",
+  "tier": "Bronze",
+  "title": "Atenție: oportunitate de îmbunătățire",
+  "body": "Obiectiv: Increase CASCO sales\nÎn ultimele 15 zile: conversie 5.3%, venit 322648, puncte 100.\nSugestie: aplică direcțiile din anunțul managerului (follow-up rapid, evidențiază promoțiile, etc.).",
+  "reason": "Low conversion",
+  "metrics": {
+    "conversion": 0.05291005291005291,
+    "revenue": 322648.4,
+    "points": 100.0,
+    "risk_of_underperform": 0.11502970694957881,
+    "trend_revenue_30d": 0.04574933764828753
+  },
+  "actions": [
+    {
+      "type": "open_dashboard",
+      "label": "Deschide dashboard"
+    },
+    {
+      "type": "ack",
+      "label": "Am înțeles"
+    }
+  ]
+}

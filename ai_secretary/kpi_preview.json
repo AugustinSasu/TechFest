@@ -1,0 +1,80 @@
+[
+  {
+    "dealer_id": "D100",
+    "region": "DE",
+    "tier": "Bronze",
+    "leads": 171.0,
+    "deals": 8.0,
+    "revenue": 288384.27,
+    "points": 80.0,
+    "conversion": 0.04678362573099415,
+    "trend_revenue_30d": -0.01815812009650216,
+    "trend_conversion_30d": 0.7403508771929823,
+    "risk_of_underperform": 1.0
+  },
+  {
+    "dealer_id": "D103",
+    "region": "DE",
+    "tier": "Bronze",
+    "leads": 174.0,
+    "deals": 8.0,
+    "revenue": 248189.24,
+    "points": 80.0,
+    "conversion": 0.04597701149425287,
+    "trend_revenue_30d": 0.05119236514940389,
+    "trend_conversion_30d": 0.1691297208538588,
+    "risk_of_underperform": 0.9787102447834966
+  },
+  {
+    "dealer_id": "D105",
+    "region": "DE",
+    "tier": "Bronze",
+    "leads": 211.0,
+    "deals": 13.0,
+    "revenue": 151276.34,
+    "points": 130.0,
+    "conversion": 0.061611374407582936,
+    "trend_revenue_30d": -0.05754567942644957,
+    "trend_conversion_30d": 0.447867298578199,
+    "risk_of_underperform": 0.3859172040497367
+  },
+  {
+    "dealer_id": "D102",
+    "region": "DE",
+    "tier": "Bronze",
+    "leads": 181.0,
+    "deals": 11.0,
+    "revenue": 301262.65,
+    "points": 110.0,
+    "conversion": 0.06077348066298342,
+    "trend_revenue_30d": -0.02717269473505676,
+    "trend_conversion_30d": 0.36740331491712697,
+    "risk_of_underperform": 0.18222758829449606
+  },
+  {
+    "dealer_id": "D104",
+    "region": "DE",
+    "tier": "Bronze",
+    "leads": 189.0,
+    "deals": 10.0,
+    "revenue": 322648.4,
+    "points": 100.0,
+    "conversion": 0.05291005291005291,
+    "trend_revenue_30d": 0.04574933764828753,
+    "trend_conversion_30d": 0.41975308641975295,
+    "risk_of_underperform": 0.11502970694957881
+  },
+  {
+    "dealer_id": "D101",
+    "region": "DE",
+    "tier": "Bronze",
+    "leads": 182.0,
+    "deals": 10.0,
+    "revenue": 245534.39,
+    "points": 100.0,
+    "conversion": 0.054945054945054944,
+    "trend_revenue_30d": 0.09968411463418567,
+    "trend_conversion_30d": 0.05494505494505488,
+    "risk_of_underperform": 0.0
+  }
+]
