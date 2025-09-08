@@ -1,4 +1,9 @@
-# services/dealership_service.py
+# owner:POP MIRCEA STEFAN
+# CRATE_DATE: 2024-06-20 10:40
+# LAST MODIFY_DATE: --
+# MODIFY BY: --
+
+
 from typing import List, Optional, Dict, Any
 from sqlalchemy.orm import Session
 from repositories.dealership_repository import DealershipRepository as Repo
