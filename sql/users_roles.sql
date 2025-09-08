@@ -7,6 +7,7 @@ GRANT CONNECT, RESOURCE TO app_owner;
 -- App roles
 CREATE ROLE sales_role;
 CREATE ROLE manager_role;
+CREATE ROLE app_role;
 
 -- Example users (one salesperson, one manager)
 CREATE USER sales_anna IDENTIFIED BY "sales_anna";
@@ -15,3 +16,7 @@ GRANT CREATE SESSION TO sales_anna, mgr_bob;
 
 GRANT sales_role   TO sales_anna;
 GRANT manager_role TO mgr_bob;
+
+CREATE USER app_backend IDENTIFIED BY "app_backend";
+GRANT CREATE SESSION TO app_backend;
+GRANT app_role TO app_backend;
