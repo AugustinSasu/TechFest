@@ -7,6 +7,7 @@ GRANT CONNECT, RESOURCE TO app_owner;
 -- App roles
 CREATE ROLE sales_role;
 CREATE ROLE manager_role;
+
 CREATE ROLE app_role;
 
 -- Example users (one salesperson, one manager)

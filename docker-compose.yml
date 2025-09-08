@@ -14,6 +14,7 @@ services:
     volumes:
     #  copies the vwvolume stored in the host to the container at path /opt/oracle/vwvolume
       - vwvolume:/opt/oracle/vwvolume
+    shm_size: 1g
     healthcheck:
       test: ["CMD", "bash", "-lc", "echo 'select 1 from dual;' | sqlplus -s sys/\"$ORACLE_PWD\"@localhost:1521/FREEPDB1 as sysdba | grep -q 1"]
       interval: 20s
