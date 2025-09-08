@@ -24,13 +24,14 @@ app.add_middleware(
 )
 
 # Routers
-app.include_router(dealership_router,   prefix=settings.API_V1_PREFIX)
-app.include_router(vehicle_router,      prefix=settings.API_V1_PREFIX)
-app.include_router(service_item_router, prefix=settings.API_V1_PREFIX)
-app.include_router(sale_item_router,    prefix=settings.API_V1_PREFIX)
-app.include_router(customers_router,    prefix=settings.API_V1_PREFIX)
-app.include_router(employees_router,    prefix=settings.API_V1_PREFIX)
-app.include_router(car_sale_item_router, prefix=settings.API_V1_PREFIX)
+app.include_router(dealership_router,   prefix=settings.API_V1_PREFIX) #1
+app.include_router(vehicle_router,      prefix=settings.API_V1_PREFIX)  #2
+app.include_router(service_item_router, prefix=settings.API_V1_PREFIX) #3
+app.include_router(sale_item_router,    prefix=settings.API_V1_PREFIX)  #4
+app.include_router(customers_router,    prefix=settings.API_V1_PREFIX)  #5
+app.include_router(employees_router,    prefix=settings.API_V1_PREFIX)   #6
+app.include_router(car_sale_item_router, prefix=settings.API_V1_PREFIX)   #7
+app.include_router(service_item_router,    prefix=settings.API_V1_PREFIX)   #8
 # Healthcheck
 @app.get("/health")
 def health():
