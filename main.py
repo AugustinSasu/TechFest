@@ -11,7 +11,7 @@ from api.routes.vehicle import router as vehicle_router
 from api.routes.service_item import router as service_item_router
 from api.routes.sale_item import router as sale_item_router
 from api.routes.employee import router as employees_router
-
+from api.routes.car_sale_item import router as car_sale_item_router
 app = FastAPI(title=settings.APP_NAME)
 
 # CORS
@@ -30,7 +30,7 @@ app.include_router(service_item_router, prefix=settings.API_V1_PREFIX)
 app.include_router(sale_item_router,    prefix=settings.API_V1_PREFIX)
 app.include_router(customers_router,    prefix=settings.API_V1_PREFIX)
 app.include_router(employees_router,    prefix=settings.API_V1_PREFIX)
-
+app.include_router(car_sale_item_router, prefix=settings.API_V1_PREFIX)
 # Healthcheck
 @app.get("/health")
 def health():
