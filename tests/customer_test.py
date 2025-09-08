@@ -3,7 +3,7 @@ import urllib.parse
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
@@ -33,19 +33,33 @@ def test_engine():
     CustomerBase.metadata.drop_all(bind=engine)
 
 
+
 @pytest.fixture()
 def db_session(test_engine):
-    """
-    Sesiune SQLAlchemy reutilizată în fiecare test (aceeași sesiune este injectată în router).
-    Nu facem COMMIT; la final dăm rollback ca să revenim la stare curată.
-    """
-    SessionLocal = sessionmaker(bind=test_engine, autoflush=False, autocommit=False, future=True)
+    # o conexiune dedicată fiecărui test
+    connection = test_engine.connect()
+    # tranzacție părinte (va "îmbrăca" toate commit-urile din sesiune)
+    trans = connection.begin()
+
+    SessionLocal = sessionmaker(bind=connection, autoflush=False, autocommit=False, future=True)
     session = SessionLocal()
+
+    # savepoint pentru a permite "commit"-uri în interior fără a închide tranzacția părinte
+    session.begin_nested()
+
+    @event.listens_for(session, "after_transaction_end")
+    def restart_savepoint(sess, trans_):
+        # când un savepoint se închide (ex: după un commit în endpoint), deschidem altul
+        if trans_.nested and not trans_._parent.nested:
+            sess.begin_nested()
+
     try:
         yield session
     finally:
-        session.rollback()
         session.close()
+        # anulăm TOT ce s-a făcut în test (inclusiv commit-urile din API)
+        trans.rollback()
+        connection.close()
 
 
 @pytest.fixture()
@@ -64,6 +78,7 @@ def client(db_session):
 
     app.dependency_overrides[customers_module.get_db] = override_get_db
     return TestClient(app)
+
 
 
 # -----------------------------

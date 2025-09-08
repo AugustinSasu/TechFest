@@ -1,3 +1,20 @@
+1. clonezi repo
+
+git clone https://github.com/AugustinSasu/TechFest.git
+
+te muti in director
+cd TechFest
+
+dai git breanch -a sa vezi ce branchuri sunt
+git branch -a
+
+dai git checkout backend
+
+git pull origin backend
+
+dupa ce ajungeti sa trageti backendul la voi local pe calculator, copiati ce scrie mai jos cu pyp install
+si rulati in terminal. is extensii de care are nevoie backendul sa ruleze
+
 pip install uvicorn
 pip install pydantic
 pip install fastapi
@@ -6,6 +23,8 @@ pip install pyTest
 pip install oracledb
 pip install httpx 
 pip install pytest
-
-
 python -m pip install -U email-validator
+
+dupa asta dati run la fisier main.py iar aplicatie o sa ruleze pe localhost:8000
+aveti grija la folderul database/engine si sesion sau .env sa aveti legata baza de date uptata de la gusti ( ultimul uptate la ora 14:--)
+daca nu aveti legata baza de date o sa va dea eroare la pornirea aplicatiei

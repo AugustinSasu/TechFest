@@ -28,3 +28,7 @@ python -m pip install -U email-validator
 dupa asta dati run la fisier main.py iar aplicatie o sa ruleze pe localhost:8000
 aveti grija la folderul database/engine si sesion sau .env sa aveti legata baza de date uptata de la gusti ( ultimul uptate la ora 14:--)
 daca nu aveti legata baza de date o sa va dea eroare la pornirea aplicatiei
+
+dupa ce ruleaza pe  http://127.0.0.1:8000 aveti portul unde ruleaza aplicatia daca 
+accesati  http://127.0.0.1:8000/docs aveti acces la swager unde puteti testa si tot
+

@@ -8,8 +8,8 @@ class CustomerService:
     def __init__(self, repo: CustomerRepository | None = None):
         self.repo = repo or CustomerRepository()
 
-    def create(self, db: Session, payload: CustomerCreate) -> Customer:
-        return self.repo.create(db, data=payload.model_dict())
+    def create(self, db, payload: CustomerCreate):
+        return self.repo.create(db, data=payload.model_dump())
 
     def get(self, db: Session, customer_id: int) -> Optional[Customer]:
         return self.repo.get(db, customer_id=customer_id)
