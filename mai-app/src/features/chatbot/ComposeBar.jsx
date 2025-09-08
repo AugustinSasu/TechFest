@@ -34,11 +34,25 @@ export default function ComposeBar({ disabled = false, onSend }) {
         maxRows={6}
         fullWidth
       />
-      <Box>
-        <Button variant="contained" onClick={send} disabled={disabled || !value.trim()}>
+      <Stack direction="row" spacing={1} sx={{ minWidth: 260 }}>
+        <Button
+          variant="contained"
+          onClick={send}
+          disabled={disabled || !value.trim()}
+          sx={{ flex: 1, minWidth: 120, height: 40 }}
+        >
           Send
         </Button>
-      </Box>
+        <Button
+          variant="outlined"
+          color="secondary"
+          onClick={() => { if (value.trim()) { onRecommend?.(value.trim()); setValue(''); } }}
+          disabled={disabled || !value.trim()}
+          sx={{ flex: 1, minWidth: 120, height: 40 }}
+        >
+          Send Recommendation
+        </Button>
+      </Stack>
     </Stack>
   );
 }

@@ -42,7 +42,6 @@ export default class ApiClient {
   async request(path, { method = 'GET', params, body, headers, skipAuth = false, signal } = {}) {
     // MOCK SHORT-CIRCUIT
     if (isMockEnabled()) {
-      // simulăm o mică întârziere ca în viața reală
       const data = await mockRequest(path, { method, params, body });
       await new Promise(r => setTimeout(r, 200));
       return data;

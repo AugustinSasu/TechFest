@@ -26,6 +26,8 @@ export default function SalesTable({
             <TableRow>
               <TableCell>ID</TableCell>
               <TableCell>Agent</TableCell>
+              <TableCell>Location</TableCell>
+              <TableCell>Product/Service</TableCell>
               <TableCell align="right">Amount</TableCell>
               <TableCell>Date</TableCell>
               <TableCell>Region</TableCell>
@@ -41,6 +43,8 @@ export default function SalesTable({
               >
                 <TableCell>{r.id}</TableCell>
                 <TableCell>{r.agentName || r.agentId}</TableCell>
+                <TableCell>{r.dealershipName || r.dealership_id || '-'}</TableCell>
+                <TableCell>{r.productName || r.serviceName || r.vehicleModel || '-'}</TableCell>
                 <TableCell align="right">{fmtCurrency(r.amount)}</TableCell>
                 <TableCell>{fmtDate(r.date)}</TableCell>
                 <TableCell>{r.region || '-'}</TableCell>

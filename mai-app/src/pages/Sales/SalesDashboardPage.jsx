@@ -6,7 +6,7 @@ import { SALESMAN_TABS } from '../../routing/routePaths';
 import { useTabQuerySync } from '../../hooks/useTabQuerySync';
 
 // Panels
-import OverviewPanel from './panels/OverviewPanel';
+// ...existing code...
 import MyStatsPanel from './panels/MyStatsPanel';
 import ImprovementsPanel from './panels/ImprovementsPanel';
 import AchievementsPanel from './panels/AchievementsPanel';
@@ -19,7 +19,6 @@ export default function SalesDashboardPage() {
     <SalesLayout>
       <SectionNav tabs={SALESMAN_TABS} sx={{ mb: 2 }} />
       <Box sx={{ display: 'grid', gap: 2 }}>
-        {tab === 'overview' && <OverviewPanel />}
         {tab === 'mystats' && <MyStatsPanel />}
         {tab === 'improvements' && <ImprovementsPanel />}
         {tab === 'achievements' && <AchievementsPanel />}

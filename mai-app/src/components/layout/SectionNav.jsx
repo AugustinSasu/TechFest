@@ -10,7 +10,7 @@ export default function SectionNav({ tabs = [], sx }) {
   const [params, setParams] = useSearchParams();
 
   const normalized = tabs.map(t => (typeof t === 'string' ? { key: t, label: t } : t));
-  const defaultKey = normalized[0]?.key || 'overview';
+  const defaultKey = normalized[0]?.key || '';
   const value = params.get('tab') || defaultKey;
 
   const handleChange = (_e, newVal) => {

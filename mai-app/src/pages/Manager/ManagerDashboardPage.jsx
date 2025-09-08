@@ -6,7 +6,7 @@ import { MANAGER_TABS } from '../../routing/routePaths';
 import { useTabQuerySync } from '../../hooks/useTabQuerySync';
 
 // Panels
-import OverviewPanel from './panels/OverviewPanel';
+// ...existing code...
 import SalesPanel from './panels/SalesPanel';
 import AgentsPanel from './panels/AgentsPanel';
 import ChatbotPanel from './panels/ChatbotPanel';
@@ -18,7 +18,6 @@ export default function ManagerDashboardPage() {
     <ManagerLayout>
       <SectionNav tabs={MANAGER_TABS} sx={{ mb: 2 }} />
       <Box sx={{ display: 'grid', gap: 2 }}>
-        {tab === 'overview' && <OverviewPanel />}
         {tab === 'sales' && <SalesPanel />}
         {tab === 'agents' && <AgentsPanel />}
         {tab === 'chat' && <ChatbotPanel />}

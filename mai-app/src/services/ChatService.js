@@ -5,6 +5,13 @@ import ApiClient from './ApiClient';
  * Supports both session-based (/chat/sessions) and a simple fallback (/chat).
  */
 export default class ChatService {
+  /**
+   * Send a recommendation from manager to agent.
+   * @param {{recommendation:string, agentId?:string}} payload
+   */
+  sendRecommendation(payload) {
+    return this.api.post('/chat/recommendation', payload);
+  }
   /** @param {ApiClient} api */
   constructor(api) {
     this.api = api;

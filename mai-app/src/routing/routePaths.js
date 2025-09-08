@@ -11,8 +11,8 @@ export const ROLES = {
 };
 
 // Tab keys used by the single-page dashboards (kept here for consistency)
-export const MANAGER_TABS = ['overview', 'sales', 'agents', 'chat'];
-export const SALESMAN_TABS = ['overview', 'mystats', 'improvements', 'achievements', 'feedback'];
+export const MANAGER_TABS = ['sales', 'agents', 'chat'];
+export const SALESMAN_TABS = ['mystats', 'improvements', 'achievements', 'feedback'];
 
 export const getHomeForRole = (role) => {
   if (role === ROLES.MANAGER) return ROUTES.MANAGER;

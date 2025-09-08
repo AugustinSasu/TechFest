@@ -49,6 +49,22 @@ export default function ChatWindow({ presets = [], initialMessages = [], onSend 
     }
   };
 
+  const sendRecommendation = async (recommendText) => {
+    add({ author: 'manager', content: `Recommendation: ${recommendText}` });
+    setBusy(true);
+    try {
+      if (onRecommend) {
+        await onRecommend(recommendText);
+      } else {
+        await post('/chat/recommendation', { recommendation: recommendText });
+      }
+    } catch (e) {
+      error?.(e.message || 'Failed to send recommendation');
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const presetItems = useMemo(() => presets, [presets]);
 
   return (
@@ -60,7 +76,7 @@ export default function ChatWindow({ presets = [], initialMessages = [], onSend 
         </Box>
       ) : null}
       <MessageList messages={messages} />
-      <ComposeBar disabled={busy} onSend={send} />
+  <ComposeBar disabled={busy} onSend={send} onRecommend={sendRecommendation} />
     </Paper>
   );
 }
