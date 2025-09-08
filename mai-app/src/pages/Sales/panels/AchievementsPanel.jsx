@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Grid, Stack, Typography } from '@mui/material';
+import { DailyRewardsCard, MonthlyRewardsCard, SideQuestsCard } from '../../../components/cards/RewardsCard';
 import PageSection from '../../../components/common/PageSection';
 import AchievementList from '../../../features/achievements/AchievementList';
 import LevelProgress from '../../../features/achievements/LevelProgress';
@@ -35,6 +36,11 @@ export default function AchievementsPanel() {
 
   return (
     <Stack spacing={2}>
+      <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} alignItems="stretch" justifyContent="center">
+        <DailyRewardsCard style={{ flex: 1, minWidth: 0 }} />
+        <MonthlyRewardsCard style={{ flex: 1, minWidth: 0 }} />
+        <SideQuestsCard style={{ flex: 1, minWidth: 0 }} />
+      </Stack>
       <PageSection title="Your Achievements">
         <AchievementList items={achievements} />
       </PageSection>
