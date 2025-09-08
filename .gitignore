@@ -1,0 +1,66 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+*.egg
+*.log
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pydc
+
+# Unit test / coverage reports
+.coverage
+htmlcov/
+.cache/
+.pytest_cache/
+*.cover
+*.coverage
+*.coverage.*
+*.pytest_cache/
+.tox/
+.nox/
+.mypy_cache/
+.dmypy.json
+.dmypy/
+
+# --- Environments ---
+.env
+.venv/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# --- IDEs / Editors ---
+.vscode/
+.idea/
+*.iml
+
+# --- OS specific ---
+.DS_Store
+Thumbs.db
+
+# --- Build / Packaging ---
+build/
+dist/
+*.spec
+
+# --- Database ---
+*.db
+*.sqlite3
+
+# --- Logs ---
+logs/
+*.log
+*.out
+*.pid
+
+# --- Local configs ---
+config.local.py
