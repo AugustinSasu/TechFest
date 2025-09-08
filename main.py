@@ -6,11 +6,11 @@ from core.config import settings
 from database.engine import engine, Base
 
 from api.routes.dealership import router as dealership_router
-from api.routes.customers import router as customers_router  # <-- nou
+from api.routes.customers import router as customers_router
 from api.routes.vehicle import router as vehicle_router
 from api.routes.service_item import router as service_item_router
 from api.routes.sale_item import router as sale_item_router
-
+from api.routes.employee import router as employees_router
 
 app = FastAPI(title=settings.APP_NAME)
 
@@ -24,11 +24,12 @@ app.add_middleware(
 )
 
 # Routers
-app.include_router(dealership_router,  prefix=settings.API_V1_PREFIX)
-app.include_router(vehicle_router,     prefix=settings.API_V1_PREFIX)
+app.include_router(dealership_router,   prefix=settings.API_V1_PREFIX)
+app.include_router(vehicle_router,      prefix=settings.API_V1_PREFIX)
 app.include_router(service_item_router, prefix=settings.API_V1_PREFIX)
-app.include_router(sale_item_router,   prefix=settings.API_V1_PREFIX)
-app.include_router(customers_router,   prefix=settings.API_V1_PREFIX)  # update customer
+app.include_router(sale_item_router,    prefix=settings.API_V1_PREFIX)
+app.include_router(customers_router,    prefix=settings.API_V1_PREFIX)
+app.include_router(employees_router,    prefix=settings.API_V1_PREFIX)
 
 # Healthcheck
 @app.get("/health")
