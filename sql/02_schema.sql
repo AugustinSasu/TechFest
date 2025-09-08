@@ -28,7 +28,8 @@ CREATE TABLE review(
     review_text     CLOB   NOT NULL 
 );
 
-GRANT SELECT, INSERT, UPDATE, DELETE ON review TO manager_role; -- managers manage reviews
+-- managers manage reviews
+GRANT SELECT, INSERT, UPDATE, DELETE ON review TO manager_role; 
 GRANT SELECT ON review TO sales_role; 
 
 -- Customers
@@ -121,8 +122,6 @@ CREATE TABLE ai_docs (
   src_text     CLOB,
   embedding    VECTOR(512, FLOAT32) -- to be adjusted regarding the model used
 );
-
-DROP TABLE ai_docs;
 
 GRANT SELECT, INSERT ON ai_docs TO sales_role;
 GRANT SELECT, INSERT, UPDATE, DELETE ON ai_docs TO manager_role;

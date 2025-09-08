@@ -5,6 +5,7 @@ import pandas as pd
 import openai
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
+
 # DB connection paramameters
 DB_USER = os.getenv("DB_USER", "APP_OWNER")
 DB_PASS = os.getenv("DB_PASS", "app_owner")
