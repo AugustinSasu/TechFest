@@ -1,3 +1,9 @@
+# owner:POP MIRCEA STEFAN
+# CRATE_DATE: 2024-06-20 10:40
+# LAST MODIFY_DATE: --
+# MODIFY BY: --
+
+#creare sesiune baza de date
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy import text
 from core.config import settings

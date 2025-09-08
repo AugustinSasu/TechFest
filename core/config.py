@@ -1,4 +1,8 @@
-# core/config.py
+# owner:POP MIRCEA STEFAN
+# CRATE_DATE: 2024-06-20 10:40
+# LAST MODIFY_DATE: --
+# MODIFY BY: --
+
 from pydantic_settings import BaseSettings
 from pydantic import AnyHttpUrl, field_validator
 from pathlib import Path
@@ -9,7 +13,7 @@ class Settings(BaseSettings):
     # App
     APP_NAME: str = "TechFest Api"
     ENVIRONMENT: str = "dev"
-    API_V1_PREFIX: str = "/api/v1"
+    API_V1_PREFIX: str = "/api"
 
     # Oracle (Thin mode)
     ORACLE_USER: str
