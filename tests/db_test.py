@@ -1,5 +1,10 @@
-from sqlalchemy import create_engine, text
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from main import app
 
+
+from sqlalchemy import create_engine, text
 from core.config import settings
 
 url = settings.oracle_url()

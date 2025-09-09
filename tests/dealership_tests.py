@@ -2,6 +2,12 @@ import pytest
 from schemas.dealership import DealershipBase, DealershipCreate, DealershipUpdate, DealershipOut
 from pydantic import ValidationError
 
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from main import app
+
+
 def test_dealership_base_valid():
     obj = DealershipBase(name="Test Dealer", city="City", region="Region")
     assert obj.name == "Test Dealer"
