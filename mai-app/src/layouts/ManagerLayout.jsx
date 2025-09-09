@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
-import { Box, Container, useMediaQuery, useTheme } from '@mui/material';
+import React from 'react';
+import { Box, Container } from '@mui/material';
 import AppTopBar from '../components/layout/AppTopBar';
-import AppSideNav from '../components/layout/AppSideNav';
 import Footer from '../components/layout/Footer';
 
 /**
@@ -9,15 +8,10 @@ import Footer from '../components/layout/Footer';
  * Keeps the side nav permanent on md+ and temporary (drawer) on small screens.
  */
 export default function ManagerLayout({ children }) {
-  const theme = useTheme();
-  const mdUp = useMediaQuery(theme.breakpoints.up('md'));
-  const [navOpen, setNavOpen] = useState(false);
-  const drawerWidth = 240;
-
   return (
-    <Box sx={{ minHeight: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Box sx={{ flex: 1, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Box sx={{ width: 900, alignSelf: 'center' }}>
-        <AppTopBar onMenuClick={() => setNavOpen(true)} showMenuButton={!mdUp} />
+        <AppTopBar />
       </Box>
 
       <Box sx={{ display: 'flex', flex: 1, justifyContent: 'center' }}>
@@ -28,10 +22,13 @@ export default function ManagerLayout({ children }) {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            py: 3
+            py: 3,
+            flexGrow: 1
           }}
         >
-          <Container maxWidth={false} sx={{ width: '100%' }}>{children}</Container>
+          <Container maxWidth={false} sx={{ width: '100%', flexGrow: 1 }}>
+            {children}
+          </Container>
         </Box>
       </Box>
 

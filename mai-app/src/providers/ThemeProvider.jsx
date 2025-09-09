@@ -22,7 +22,23 @@ export function ThemeProvider({ children }) {
         <CssBaseline />
         <GlobalStyles
           styles={{
-            'html, body, #root': { height: '100%' },
+            'html, body, #root': {
+              minHeight: '100%',
+              height: 'auto',
+              backgroundColor: theme.palette.background.default,
+            },
+            '#root': {
+              display: 'flex',
+              flexDirection: 'column',
+              minHeight: '100vh'
+            },
+            body: {
+              margin: 0,
+              padding: 0,
+              backgroundImage: 'none',
+              backgroundAttachment: 'scroll'
+            },
+            'main': { flexGrow: 1 },
             '*, *::before, *::after': { boxSizing: 'border-box' },
             img: { maxWidth: '100%', display: 'block' }
           }}

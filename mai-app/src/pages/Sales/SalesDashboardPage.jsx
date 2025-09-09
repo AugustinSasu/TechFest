@@ -8,7 +8,6 @@ import { useTabQuerySync } from '../../hooks/useTabQuerySync';
 // Panels
 // ...existing code...
 import MyStatsPanel from './panels/MyStatsPanel';
-import ImprovementsPanel from './panels/ImprovementsPanel';
 import AchievementsPanel from './panels/AchievementsPanel';
 import FeedbackPanel from './panels/FeedbackPanel';
 
@@ -20,7 +19,6 @@ export default function SalesDashboardPage() {
       <SectionNav tabs={SALESMAN_TABS} sx={{ mb: 2 }} />
       <Box sx={{ display: 'grid', gap: 2 }}>
         {tab === 'mystats' && <MyStatsPanel />}
-        {tab === 'improvements' && <ImprovementsPanel />}
         {tab === 'achievements' && <AchievementsPanel />}
         {tab === 'feedback' && <FeedbackPanel />}
       </Box>

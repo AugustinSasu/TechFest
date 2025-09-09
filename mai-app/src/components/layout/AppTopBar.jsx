@@ -20,11 +20,6 @@ export default function AppTopBar({ onMenuClick, showMenuButton = true }) {
     <AppBar position="sticky" color="default" elevation={0} sx={{ borderBottom: theme => `1px solid ${theme.palette.divider}` }}>
       <Container maxWidth="lg">
         <Toolbar disableGutters sx={{ gap: 2 }}>
-          {showMenuButton && (
-            <Button onClick={onMenuClick} sx={{ minWidth: 0, fontSize: 20 }} aria-label="open menu">
-              ☰
-            </Button>
-          )}
           <Box onClick={goHome} sx={{ cursor: 'pointer' }}>
             <Logo size={26} withText />
           </Box>

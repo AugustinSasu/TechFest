@@ -19,15 +19,6 @@ export default class SalesService {
     return this.api.get('/sales/me/stats', params);
   }
 
-  getImprovements() {
-    return this.api.get('/sales/me/improvements');
-  }
-
-  /** @param {string} id */
-  completeImprovement(id) {
-    return this.api.patch(`/sales/me/improvements/${encodeURIComponent(id)}`, { done: true });
-  }
-
   getAchievements() {
     return this.api.get('/sales/me/achievements');
   }
