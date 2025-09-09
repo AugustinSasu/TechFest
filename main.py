@@ -15,6 +15,8 @@ from api.routes.sale_order import router as sale_order_router
 from api.routes.employee import router as employees_router
 from api.routes.car_sale_item import router as car_sale_router
 from api.routes.review import router as review_router  # <-- NEW
+from api.routes.employee_stats import router as employee_stats_router  # <-- NEW
+
 
 def generate_unique_id(route: APIRoute) -> str:
     """Face operationId unic indiferent de numele funcției."""
@@ -61,6 +63,7 @@ app.include_router(customers_router,    prefix=settings.API_V1_PREFIX)
 app.include_router(employees_router,    prefix=settings.API_V1_PREFIX)
 app.include_router(car_sale_router,     prefix=settings.API_V1_PREFIX)
 app.include_router(review_router,       prefix=settings.API_V1_PREFIX)  # <-- NEW
+app.include_router(employee_stats_router, prefix=settings.API_V1_PREFIX)  # <-- NEW
 
 @app.get("/health")
 def health():
