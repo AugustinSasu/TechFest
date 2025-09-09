@@ -11,13 +11,10 @@ from api.routes.dealership import router as dealership_router
 from api.routes.customers import router as customers_router
 from api.routes.vehicle import router as vehicle_router
 from api.routes.service_item import router as service_item_router
-
 from api.routes.sale_order import router as sale_order_router
-
 from api.routes.employee import router as employees_router
-# dacă ai și car_sale_item:
 from api.routes.car_sale_item import router as car_sale_router
-
+from api.routes.review import router as review_router  # <-- NEW
 
 def generate_unique_id(route: APIRoute) -> str:
     """Face operationId unic indiferent de numele funcției."""
@@ -38,12 +35,12 @@ async def lifespan(app: FastAPI):
     if settings.ENVIRONMENT.lower() == "dev":
         Base.metadata.create_all(bind=engine)
     yield
-    # shutdown (nimic special de făcut)
+    # shutdown
 
 app = FastAPI(
     title=settings.APP_NAME,
     lifespan=lifespan,
-    generate_unique_id_function=generate_unique_id,  # << elimină duplicate opId
+    generate_unique_id_function=generate_unique_id,
 )
 
 # CORS
@@ -63,6 +60,7 @@ app.include_router(sale_order_router,   prefix=settings.API_V1_PREFIX)
 app.include_router(customers_router,    prefix=settings.API_V1_PREFIX)
 app.include_router(employees_router,    prefix=settings.API_V1_PREFIX)
 app.include_router(car_sale_router,     prefix=settings.API_V1_PREFIX)
+app.include_router(review_router,       prefix=settings.API_V1_PREFIX)  # <-- NEW
 
 @app.get("/health")
 def health():

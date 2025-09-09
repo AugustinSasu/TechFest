@@ -34,3 +34,6 @@ daca nu aveti legata baza de date o sa va dea eroare la pornirea aplicatiei
 dupa ce ruleaza pe  http://127.0.0.1:8000 aveti portul unde ruleaza aplicatia daca 
 accesati  http://127.0.0.1:8000/docs aveti acces la swager unde puteti testa si tot
 
+!!!! daca sunteti vlad va rog frumos sa ma sunati pe nuamr 0742388390
+!!!  daca nu sunteti capabili 
+
