@@ -40,3 +40,7 @@ class SaleOrderService:
     @staticmethod
     def delete(db: Session, order_id: int) -> bool:
         return Repo.delete(db, order_id)
+
+    @staticmethod
+    def list_by_salesperson(db: Session, employee_id: int) -> List[SaleOrder]:
+        return Repo.list(db, salesperson_id=employee_id)

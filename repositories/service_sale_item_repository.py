@@ -1,21 +1,20 @@
-# repositories/service_sale_item_repository.py
-# service_sale_item.py
+# 📁 repositories/service_sale_item_repository.py
+# ✅ REPOSITORY: service_sale_item.py
 # ------------------------------------
-
 # Acest fișier definește accesul la date pentru entitatea `service_sale_item`.
 # Reprezintă stratul care interacționează direct cu baza de date prin SQLAlchemy.
 # Include metode CRUD și listare cu filtre opționale.
+# Suportă și filtrare după salesperson_id (JOIN cu sale_order).
 
 # Autor: Cristian-Valentin Alexa
 # Data: 14 Aprilie 2024
-
-# ------------------------------------
 
 from typing import List, Optional
 from sqlalchemy.orm import Session
 from sqlalchemy import select, asc, desc
 from models.service_sale_item import ServiceSaleItem
 from schemas.service_sale_item import ServiceSaleItemCreate, ServiceSaleItemUpdate
+from models.sale_order import SaleOrder
 
 class ServiceSaleItemRepository:
     @staticmethod
@@ -41,14 +40,21 @@ class ServiceSaleItemRepository:
         db: Session,
         order_id: Optional[int] = None,
         service_id: Optional[int] = None,
+        salesperson_id: Optional[int] = None,
         sort: str = "asc",
         limit: int = 100,
         offset: int = 0,
     ) -> List[ServiceSaleItem]:
         """
-        Returnează o listă de servicii vândute, filtrate după order_id sau service_id.
+        Returnează o listă de servicii vândute, filtrate după order_id, service_id sau salesperson_id.
+        Dacă este specificat `salesperson_id`, se face JOIN cu `sale_order`.
         """
         stmt = select(ServiceSaleItem)
+
+        if salesperson_id is not None:
+            stmt = stmt.join(SaleOrder, ServiceSaleItem.order_id == SaleOrder.order_id)
+            stmt = stmt.where(SaleOrder.salesperson_id == salesperson_id)
+
         if order_id is not None:
             stmt = stmt.where(ServiceSaleItem.order_id == order_id)
         if service_id is not None:

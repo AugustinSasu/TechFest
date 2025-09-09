@@ -279,3 +279,8 @@ def delete_sale_order(order_id: int, db: Session = Depends(get_db)):
     return
 
 
+# 🔄 Nou: returnează toate comenzile pentru un agent
+@router.get("/by-employee/{employee_id}", response_model=List[SaleOrderOut])
+def get_orders_by_employee(employee_id: int, db: Session = Depends(get_db)):
+    return SaleOrderService.list_by_salesperson(db, employee_id)
+
