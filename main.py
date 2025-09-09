@@ -11,7 +11,9 @@ from api.routes.dealership import router as dealership_router
 from api.routes.customers import router as customers_router
 from api.routes.vehicle import router as vehicle_router
 from api.routes.service_item import router as service_item_router
-from api.routes.sale_item import router as sale_item_router
+
+from api.routes.sale_order import router as sale_order_router
+
 from api.routes.employee import router as employees_router
 # dacă ai și car_sale_item:
 from api.routes.car_sale_item import router as car_sale_router
@@ -57,7 +59,7 @@ app.add_middleware(
 app.include_router(dealership_router,   prefix=settings.API_V1_PREFIX)
 app.include_router(vehicle_router,      prefix=settings.API_V1_PREFIX)
 app.include_router(service_item_router, prefix=settings.API_V1_PREFIX)
-app.include_router(sale_item_router,    prefix=settings.API_V1_PREFIX)
+app.include_router(sale_order_router,   prefix=settings.API_V1_PREFIX)
 app.include_router(customers_router,    prefix=settings.API_V1_PREFIX)
 app.include_router(employees_router,    prefix=settings.API_V1_PREFIX)
 app.include_router(car_sale_router,     prefix=settings.API_V1_PREFIX)
