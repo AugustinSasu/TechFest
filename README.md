@@ -25,6 +25,8 @@ pip install httpx
 pip install pytest
 python -m pip install -U email-validator
 
+trebe creat un fisier .env dupa modelul pe care l am pus .env.exemple
+
 dupa asta dati run la fisier main.py iar aplicatie o sa ruleze pe localhost:8000
 aveti grija la folderul database/engine si sesion sau .env sa aveti legata baza de date uptata de la gusti ( ultimul uptate la ora 14:--)
 daca nu aveti legata baza de date o sa va dea eroare la pornirea aplicatiei
