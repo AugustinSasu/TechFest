@@ -18,6 +18,8 @@ from decimal import Decimal
 from database.session import get_db
 from services.service_sale_item_service import ServiceSaleItemService
 from schemas.service_sale_item import ServiceSaleItemCreate, ServiceSaleItemUpdate, ServiceSaleItemOut
+from schemas.sale_order import SaleOrderOut
+from services.sale_order_service import SaleOrderService
 
 router = APIRouter(prefix="/service-sale-items", tags=["service-sale-items"])
 
@@ -96,3 +98,7 @@ def export_service_sale_items_json(db: Session = Depends(get_db)):
 @router.get("/export/txt", response_model=str)
 def export_service_sale_items_txt(db: Session = Depends(get_db)):
     return ServiceSaleItemService.export_txt(db)
+
+@router.get("/by-employee/{employee_id}", response_model=List[SaleOrderOut])
+def get_orders_by_employee(employee_id: int, db: Session = Depends(get_db)):
+    return SaleOrderService.list_by_salesperson(db, employee_id)
