@@ -34,7 +34,7 @@ const SALES = (() => {
   return arr.sort((a, b) => (a.date < b.date ? 1 : -1));
 })();
 
-function calcSummary({ startDate, endDate, region } = {}) {
+function calcSummary({ 'start-date': startDate, 'end-date': endDate, region } = {}) {
   let rows = SALES;
   if (startDate) rows = rows.filter(s => s.date >= startDate);
   if (endDate) rows = rows.filter(s => s.date <= endDate);
@@ -86,9 +86,9 @@ export async function mockRequest(path, { method = 'GET', params = {}, body } = 
   }
   if (p === '/manager/sales') {
     let rows = SALES;
-    const { query, startDate, endDate, region } = params || {};
-    if (startDate) rows = rows.filter(s => s.date >= startDate);
-    if (endDate) rows = rows.filter(s => s.date <= endDate);
+  const { query, 'start-date': startDate, 'end-date': endDate, region } = params || {};
+  if (startDate) rows = rows.filter(s => s.date >= startDate);
+  if (endDate) rows = rows.filter(s => s.date <= endDate);
     if (region) rows = rows.filter(s => s.region === region);
     if (query) {
       const q = String(query).toLowerCase();

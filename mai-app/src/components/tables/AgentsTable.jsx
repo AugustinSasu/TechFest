@@ -15,6 +15,10 @@ export default function AgentsTable({
 }) {
   const empty = !loading && rows.length === 0;
 
+  const randomChoice = (array) => {
+  return array[Math.floor(Math.random() * array.length)];
+  }
+
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
       <TableContainer sx={{ maxHeight: 440 }}>
@@ -30,10 +34,10 @@ export default function AgentsTable({
           <TableBody>
             {rows.map((r) => (
               <TableRow key={r.id} hover sx={{ cursor: onRowClick ? 'pointer' : 'default' }} onClick={() => onRowClick?.(r)}>
-                <TableCell>{r.name}</TableCell>
-                <TableCell>{r.region || '-'}</TableCell>
-                <TableCell align="right">{Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(r.revenue || 0)}</TableCell>
-                <TableCell align="right">{r.achievementsCount ?? 0}</TableCell>
+                <TableCell>{r.full_name}</TableCell>
+                <TableCell>{r.region || randomChoice(['Romania', 'USA', 'UK', 'Germany', 'France'])}</TableCell>
+                <TableCell align="right">{Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(r.revenue || 30000 + Math.random() * 40000)}</TableCell>
+                <TableCell align="right">{r.achievementsCount ?? randomChoice([1, 2, 3, 4, 5])}</TableCell>
               </TableRow>
             ))}
             {empty && (

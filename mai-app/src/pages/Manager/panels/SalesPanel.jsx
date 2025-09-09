@@ -11,11 +11,11 @@ import { createApiClient } from '../../../services/ApiClient';
 import { createManagerService } from '../../../services/ManagerService';
 
 function defaultFilters() {
-  const end = new Date();
-  const start = new Date();
-  start.setDate(end.getDate() - 29);
+  const end_date = new Date();
+  const start_date = new Date();
+  start_date.setDate(end_date.getDate() - 29);
   const toISO = d => d.toISOString().slice(0, 10);
-  return { query: '', startDate: toISO(start), endDate: toISO(end), region: '' };
+  return { "granulatie": 1, "start-date": toISO(start_date), "end-date": toISO(end_date) };
 }
 
 export default function SalesPanel() {
@@ -41,6 +41,7 @@ export default function SalesPanel() {
         manager.getSalesSummary({ ...filters }),
         manager.getSalesList({ ...filters, page: pg, pageSize })
       ]);
+      console.log('SalesPanel.load', { sum, list });  
       setSummary(sum || {});
       setTrend(sum?.trend || []);
       setRows(list?.items || list || []);
@@ -68,7 +69,7 @@ export default function SalesPanel() {
           onChange={setFilters}
           onApply={apply}
           onReset={reset}
-          regions={[]} // optionally populate from backend
+          granularities={['saptamana', 'luna','an']} // optionally populate from backend
         />
       </PageSection>
 

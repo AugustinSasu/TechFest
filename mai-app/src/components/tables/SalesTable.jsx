@@ -41,13 +41,13 @@ export default function SalesTable({
                 sx={{ cursor: onRowClick ? 'pointer' : 'default' }}
                 onClick={() => onRowClick?.(r)}
               >
-                <TableCell>{r.id}</TableCell>
-                <TableCell>{r.agentName || r.agentId}</TableCell>
-                <TableCell>{r.dealershipName || r.dealership_id || '-'}</TableCell>
-                <TableCell>{r.productName || r.serviceName || r.vehicleModel || '-'}</TableCell>
-                <TableCell align="right">{fmtCurrency(r.amount)}</TableCell>
-                <TableCell>{fmtDate(r.date)}</TableCell>
-                <TableCell>{r.region || '-'}</TableCell>
+                <TableCell>{r.sale_id}</TableCell>
+                <TableCell>{r.agent || r.agentId}</TableCell>
+                <TableCell>{r.nume_locatie || r.dealership_id || '-'}</TableCell>
+                <TableCell>{r.produs || r.serviceName || r.vehicleModel || '-'}</TableCell>
+                <TableCell align="right">{fmtCurrency(r.pret)}</TableCell>
+                <TableCell>{fmtDate(r.data_vanzare)}</TableCell>
+                <TableCell>{r.regiune || '-'}</TableCell>
               </TableRow>
             ))}
 

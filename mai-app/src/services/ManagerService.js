@@ -12,17 +12,17 @@ export default class ManagerService {
 
   /** @param {{startDate?:string,endDate?:string,region?:string}} params */
   getSalesSummary(params) {
-    return this.api.get('/manager/sales/summary', params);
+    return this.api.get('/sale-orders/trends', params);
   }
 
   /** @param {{page?:number,pageSize?:number,query?:string,startDate?:string,endDate?:string,region?:string}} params */
   getSalesList(params) {
-    return this.api.get('/manager/sales', params);
+    return this.api.get('/sale-orders/stats', params);
   }
 
   /** @param {{page?:number,pageSize?:number,region?:string}} params */
   getAgents(params) {
-    return this.api.get('/manager/agents', params);
+    return this.api.get('/employees', params);
   }
 
   /** @param {string} agentId */
