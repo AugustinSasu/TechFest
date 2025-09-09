@@ -37,32 +37,32 @@ END;
 
 
 -- Salespeople
-INSERT INTO employee(db_username, full_name, role_code, dealership_id) VALUES
-('SALES_JDAN', 'John Dancu', 'SALES', (SELECT dealership_id FROM dealership WHERE name = 'VW North City')),
-('SALES_RPOP', 'Radu Popescu', 'SALES', (SELECT dealership_id FROM dealership WHERE name = 'VW East Town')),
-('SALES_MVAS', 'Maria Vasilescu', 'SALES', (SELECT dealership_id FROM dealership WHERE name = 'VW South Motors')),
-('SALES_ALAZ', 'Alexandru Lazăr', 'SALES', (SELECT dealership_id FROM dealership WHERE name = 'VW West Auto')),
-('SALES_ILOR', 'Ioana Loredana', 'SALES', (SELECT dealership_id FROM dealership WHERE name = 'VW North City')),
-('SALES_TSTO', 'Tudor Stoica', 'SALES', (SELECT dealership_id FROM dealership WHERE name = 'VW East Town')),
-('SALES_GCAM', 'Gabriel Campeanu', 'SALES', (SELECT dealership_id FROM dealership WHERE name = 'VW South Motors')),
-('SALES_CNAG', 'Cristina Nagy', 'SALES', (SELECT dealership_id FROM dealership WHERE name = 'VW West Auto')),
-('SALES_DGEO', 'Daniel Georgescu', 'SALES', (SELECT dealership_id FROM dealership WHERE name = 'VW North City')),
-('SALES_BMIR', 'Bianca Miron', 'SALES', (SELECT dealership_id FROM dealership WHERE name = 'VW East Town')),
-('SALES_FLUP', 'Florin Lup', 'SALES', (SELECT dealership_id FROM dealership WHERE name = 'VW South Motors')),
-('SALES_SVLA', 'Simona Vladescu', 'SALES', (SELECT dealership_id FROM dealership WHERE name = 'VW West Auto')),
-('SALES_CPOP', 'Claudiu Popa', 'SALES', (SELECT dealership_id FROM dealership WHERE name = 'VW North City')),
-('SALES_MNEA', 'Mihai Neagu', 'SALES', (SELECT dealership_id FROM dealership WHERE name = 'VW East Town')),
-('SALES_ANIC', 'Andreea Niculescu', 'SALES', (SELECT dealership_id FROM dealership WHERE name = 'VW South Motors'));
+INSERT INTO employee(db_username, full_name, role_code, dealership_id, password) VALUES
+('SALES_JDAN', 'John Dancu', 'SALES', (SELECT dealership_id FROM dealership WHERE name = 'VW North City'), 'SALES_JDAN'),
+('SALES_RPOP', 'Radu Popescu', 'SALES', (SELECT dealership_id FROM dealership WHERE name = 'VW East Town'), 'SALES_RPOP'),
+('SALES_MVAS', 'Maria Vasilescu', 'SALES', (SELECT dealership_id FROM dealership WHERE name = 'VW South Motors'), 'SALES_MVAS'),
+('SALES_ALAZ', 'Alexandru Lazăr', 'SALES', (SELECT dealership_id FROM dealership WHERE name = 'VW West Auto'), 'SALES_ALAZ'),
+('SALES_ILOR', 'Ioana Loredana', 'SALES', (SELECT dealership_id FROM dealership WHERE name = 'VW North City'), 'SALES_ILOR'),
+('SALES_TSTO', 'Tudor Stoica', 'SALES', (SELECT dealership_id FROM dealership WHERE name = 'VW East Town'), 'SALES_TSTO'),
+('SALES_GCAM', 'Gabriel Campeanu', 'SALES', (SELECT dealership_id FROM dealership WHERE name = 'VW South Motors'), 'SALES_GCAM'),
+('SALES_CNAG', 'Cristina Nagy', 'SALES', (SELECT dealership_id FROM dealership WHERE name = 'VW West Auto'), 'SALES_CNAG'),
+('SALES_DGEO', 'Daniel Georgescu', 'SALES', (SELECT dealership_id FROM dealership WHERE name = 'VW North City'), 'SALES_DGEO'),
+('SALES_BMIR', 'Bianca Miron', 'SALES', (SELECT dealership_id FROM dealership WHERE name = 'VW East Town'), 'SALES_BMIR'),
+('SALES_FLUP', 'Florin Lup', 'SALES', (SELECT dealership_id FROM dealership WHERE name = 'VW South Motors'), 'SALES_FLUP'),
+('SALES_SVLA', 'Simona Vladescu', 'SALES', (SELECT dealership_id FROM dealership WHERE name = 'VW West Auto'), 'SALES_SVLA'),
+('SALES_CPOP', 'Claudiu Popa', 'SALES', (SELECT dealership_id FROM dealership WHERE name = 'VW North City'), 'SALES_CPOP'),
+('SALES_MNEA', 'Mihai Neagu', 'SALES', (SELECT dealership_id FROM dealership WHERE name = 'VW East Town'), 'SALES_MNEA'),
+('SALES_ANIC', 'Andreea Niculescu', 'SALES', (SELECT dealership_id FROM dealership WHERE name = 'VW South Motors'), 'SALES_ANIC');
+
 
 
 -- Managers
-
-INSERT INTO employee(db_username, full_name, role_code, dealership_id) VALUES
-('MGR_ALUP', 'Alina Lupescu', 'MANAGER', (SELECT dealership_id FROM dealership WHERE name = 'VW North City')),
-('MGR_NVAS', 'Nicolae Vasilescu', 'MANAGER', (SELECT dealership_id FROM dealership WHERE name = 'VW South Motors')),
-('MGR_IOAN', 'Ioan Dragomir', 'MANAGER', (SELECT dealership_id FROM dealership WHERE name = 'VW West Auto')),
-('MGR_RFIL', 'Roxana Filip', 'MANAGER', (SELECT dealership_id FROM dealership WHERE name = 'VW West Auto')),
-('MGR_BNEG', 'Bogdan Negrea', 'MANAGER', (SELECT dealership_id FROM dealership WHERE name = 'VW South Motors'));
+INSERT INTO employee(db_username, full_name, role_code, dealership_id, password) VALUES
+('MGR_ALUP', 'Alina Lupescu', 'MANAGER', (SELECT dealership_id FROM dealership WHERE name = 'VW North City'), 'MGR_ALUP'),
+('MGR_NVAS', 'Nicolae Vasilescu', 'MANAGER', (SELECT dealership_id FROM dealership WHERE name = 'VW South Motors'), 'MGR_NVAS'),
+('MGR_IOAN', 'Ioan Dragomir', 'MANAGER', (SELECT dealership_id FROM dealership WHERE name = 'VW West Auto'), 'MGR_IOAN'),
+('MGR_RFIL', 'Roxana Filip', 'MANAGER', (SELECT dealership_id FROM dealership WHERE name = 'VW West Auto'), 'MGR_RFIL'),
+('MGR_BNEG', 'Bogdan Negrea', 'MANAGER', (SELECT dealership_id FROM dealership WHERE name = 'VW South Motors'), 'MGR_BNEG');
 
 
 -- Customers

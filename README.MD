@@ -1,4 +1,4 @@
-# Build the DB Container:
+# Build and run the DB Container:
 
 docker compose up -d
 
@@ -14,6 +14,8 @@ docker cp 01_users_roles.sql vw-db:/tmp/01_users_roles.sql
 docker cp 02_schema.sql vw-db:/tmp/02_schema.sql
 
 docker cp 03_populate.sql vw-db:/tmp/03_populate.sql
+
+docker cp 04_populate2.sql vw-db:/tmp/04_populate2.sql
 
 cd ..
 
@@ -32,6 +34,8 @@ sqlplus / as sysdba
 @/tmp/03_populate.sql
 
 Enter value for labor: 10
+
+@/tmp/04_populate.sql
 
 exit
 
