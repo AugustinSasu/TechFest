@@ -11,6 +11,7 @@ docker compose up -d
 pip install -r requirements.txt
 
 # Copy the sql scripts into the container:
+
 cd ./sql
 
 docker cp 01_users_roles.sql vw-db:/tmp/01_users_roles.sql
@@ -48,7 +49,8 @@ sqlplus app_owner/app_owner@localhost:1521/FREEPDB1
 
 Enter value for labor: 10
 
-@/tmp/04_populate.sql
+@/tmp/04_populate2.sql
+
 
 exit
 
