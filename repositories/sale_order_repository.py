@@ -30,6 +30,7 @@ class SaleOrderRepository:
         db: Session,
         status: Optional[str] = None,
         customer_id: Optional[int] = None,
+        salesperson_id: Optional[int] = None,
         sort: str = "asc",
         limit: int = 100,
         offset: int = 0,
@@ -39,6 +40,8 @@ class SaleOrderRepository:
             stmt = stmt.where(SaleOrder.status == status)
         if customer_id:
             stmt = stmt.where(SaleOrder.customer_id == customer_id)
+        if salesperson_id:
+            stmt = stmt.where(SaleOrder.salesperson_id == salesperson_id)
 
         order = asc if sort.lower() != "desc" else desc
         stmt = stmt.order_by(order(SaleOrder.order_id)).limit(limit).offset(offset)
