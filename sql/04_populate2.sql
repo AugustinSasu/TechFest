@@ -1,3 +1,4 @@
+ALTER SESSION SET CURRENT_SCHEMA=APP_OWNER;
 -- Dealerships
 INSERT INTO dealership(name, city, region) VALUES ('VW South Motors', 'Bucharest', 'S');
 INSERT INTO dealership(name, city, region) VALUES ('VW West Auto', 'Timisoara', 'W');
@@ -157,5 +158,5 @@ WHERE e.role_code = 'SALES'
 GROUP BY e.full_name, e.db_username
 ORDER BY total_sales DESC;
 
-
+SELECT * FROM sale_order;
 SELECT * FROM vehicle;

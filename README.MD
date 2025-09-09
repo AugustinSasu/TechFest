@@ -1,5 +1,9 @@
 # Build and run the DB Container:
 
+docker-compose down
+
+docker volume rm vwdb_vwvolume
+
 docker compose up -d
 
 # Install requirements:
@@ -27,9 +31,18 @@ docker exec -it vw-db bash
 
 sqlplus / as sysdba
 
-# Run the scripts from sql:
+# Run the script as sys:
 
 @/tmp/01_users_roles.sql
+
+exit
+
+# Enter SQL Plus as APP_OWNER:
+
+sqlplus app_owner/app_owner@localhost:1521/FREEPDB1
+
+# Run the rest of the scripts:
+
 @/tmp/02_schema.sql
 @/tmp/03_populate.sql
 
