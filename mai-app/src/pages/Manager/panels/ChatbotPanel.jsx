@@ -12,9 +12,9 @@ import { createChatService } from '../../../services/ChatService';
  * Here we additionally show how to drive it via ChatService with a session.
  */
 export default function ChatbotPanel() {
-  const { token } = useAuth() || {};
+  const { employeeId } = useAuth() || {};
   const { error } = useSnackbar() || {};
-  const api = useMemo(() => createApiClient({ getToken: () => token }), [token]);
+  const api = useMemo(() => createApiClient(), [employeeId]);
   const manager = useMemo(() => createManagerService(api), [api]);
   const chat = useMemo(() => createChatService(api), [api]);
 

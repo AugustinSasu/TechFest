@@ -5,31 +5,27 @@ import ApiClient from './ApiClient';
  */
 export default class SalesService {
   /** @param {ApiClient} api */
-  constructor(api) {
-    this.api = api;
+  constructor(api) { this.api = api; }
+
+  /** All endpoints now require employeeId */
+  getSummary(employeeId, params) {
+    return this.api.get(`/api/employees/${encodeURIComponent(employeeId)}/summary`, params);
   }
 
-  /** @param {{startDate?:string,endDate?:string}} params */
-  getMySummary(params) {
-    return this.api.get('/sales/me/summary', params);
+  getStats(employeeId, params) {
+    return this.api.get(`/api/employees/${encodeURIComponent(employeeId)}/stats`, params);
   }
 
-  /** @param {{startDate?:string,endDate?:string,granularity?:'day'|'week'|'month'}} params */
-  getMyStats(params) {
-    return this.api.get('/sales/me/stats', params);
+  getAchievements(employeeId) {
+    return this.api.get(`/api/employees/${encodeURIComponent(employeeId)}/achievements`);
   }
 
-  getAchievements() {
-    return this.api.get('/sales/me/achievements');
+  getFeedback(employeeId) {
+    return this.api.get(`/api/employees/${encodeURIComponent(employeeId)}/feedback`);
   }
 
-  getFeedback() {
-    return this.api.get('/sales/me/feedback');
-  }
-
-  /** @param {string} id */
-  ackFeedback(id) {
-    return this.api.post(`/sales/me/feedback/${encodeURIComponent(id)}/ack`, null);
+  ackFeedback(employeeId, id) {
+    return this.api.post(`/api/employees/${encodeURIComponent(employeeId)}/feedback/${encodeURIComponent(id)}/ack`);
   }
 }
 

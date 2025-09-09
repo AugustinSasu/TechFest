@@ -9,9 +9,9 @@ import { createApiClient } from '../../../services/ApiClient';
 import { createManagerService } from '../../../services/ManagerService';
 
 export default function AgentsPanel() {
-  const { token } = useAuth() || {};
+  const { employeeId } = useAuth() || {};
   const { error } = useSnackbar() || {};
-  const api = useMemo(() => createApiClient({ getToken: () => token }), [token]);
+  const api = useMemo(() => createApiClient(), [employeeId]);
   const manager = useMemo(() => createManagerService(api), [api]);
 
   const [rows, setRows] = useState([]);

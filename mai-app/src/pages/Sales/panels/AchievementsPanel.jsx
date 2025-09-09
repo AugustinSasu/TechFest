@@ -11,16 +11,17 @@ import { createSalesService } from '../../../services/SalesService';
 import { ACHIEVEMENT_TIERS } from '../../../utils/constants';
 
 export default function AchievementsPanel() {
-  const { token } = useAuth() || {};
+  const { employeeId } = useAuth() || {};
   const { error } = useSnackbar() || {};
-  const api = useMemo(() => createApiClient({ getToken: () => token }), [token]);
+  const api = useMemo(() => createApiClient(), [employeeId]);
   const sales = useMemo(() => createSalesService(api), [api]);
 
   const [achievements, setAchievements] = useState([]);
   const [points, setPoints] = useState(0);
 
   useEffect(() => {
-    sales.getAchievements()
+  if (!employeeId) return;
+  sales.getAchievements(employeeId)
       .then(list => {
         const items = Array.isArray(list) ? list : (list?.items || []);
         setAchievements(items);

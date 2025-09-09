@@ -8,16 +8,17 @@ import { createSalesService } from '../../../services/SalesService';
 import EmptyState from '../../../components/common/EmptyState';
 
 export default function FeedbackPanel() {
-  const { token } = useAuth() || {};
+  const { employeeId } = useAuth() || {};
   const { success, error } = useSnackbar() || {};
-  const api = useMemo(() => createApiClient({ getToken: () => token }), [token]);
+  const api = useMemo(() => createApiClient(), [employeeId]);
   const sales = useMemo(() => createSalesService(api), [api]);
 
   const [items, setItems] = useState([]);
 
   const load = async () => {
     try {
-      const list = await sales.getFeedback();
+  if (!employeeId) return;
+  const list = await sales.getFeedback(employeeId);
       setItems(Array.isArray(list) ? list : (list?.items || []));
     } catch (e) {
       error?.(e.message || 'Failed to load feedback');
@@ -29,7 +30,8 @@ export default function FeedbackPanel() {
 
   const ack = async (item) => {
     try {
-      await sales.ackFeedback(item.id);
+  if (!employeeId) return;
+  await sales.ackFeedback(employeeId, item.id);
       success?.('Acknowledged');
       setItems(prev => prev.map(x => (x.id === item.id ? { ...x, read: true } : x)));
     } catch (e) {

@@ -6,7 +6,7 @@ import { useAuth } from './useAuth';
  * Later, you can swap this to use a dedicated ApiClient class without changing callers.
  */
 export function useApi() {
-  const { token } = useAuth() || {};
+  const { employeeId } = useAuth() || {};
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
   const makeUrl = (path, params) => {
@@ -23,7 +23,7 @@ export function useApi() {
     const isFormData = body instanceof FormData;
     const finalHeaders = {
       ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  // Nu mai folosim token; dacă vei avea nevoie de alt header pe baza employeeId, îl poți adăuga aici
       ...(headers || {})
     };
 
@@ -54,6 +54,6 @@ export function useApi() {
       del: (path, opts = {}) => request(path, { ...opts, method: 'DELETE' })
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [baseUrl, token]
+  [baseUrl, employeeId]
   );
 }

@@ -3,12 +3,14 @@ import { AppBar, Box, Button, Container, Toolbar, Typography } from '@mui/materi
 import Logo from '../common/Logo';
 import { useColorMode } from '../../providers/ThemeProvider';
 import { useAuth } from '../../providers/AuthProvider';
+import { useEffect } from 'react';
 import { getHomeForRole } from '../../routing/routePaths';
 import { useNavigate } from 'react-router-dom';
 
 export default function AppTopBar({ onMenuClick, showMenuButton = true }) {
   const { mode, toggleColorMode } = useColorMode();
-  const { user, role, logout } = useAuth() || {};
+  const { user, role, logout, refreshProfile, employeeId } = useAuth() || {};
+  useEffect(() => { refreshProfile?.(); /* eslint-disable-next-line */ }, [employeeId]);
   const navigate = useNavigate();
   const appName = import.meta.env.VITE_APP_NAME || 'SalesAI';
 
@@ -27,7 +29,11 @@ export default function AppTopBar({ onMenuClick, showMenuButton = true }) {
           <Box sx={{ flexGrow: 1 }} />
 
           <Typography variant="body2" color="text.secondary" sx={{ mr: 2 }}>
-            {user ? `${user.name || 'User'} · ${role || ''}` : appName}
+            {user
+              ? (role === 'salesman'
+                  ? (user.db_username || user.full_name || 'User')
+                  : `${user.full_name || user.db_username || 'User'}${role ? ` · ${role}` : ''}`)
+              : appName}
           </Typography>
 
           <Button onClick={toggleColorMode} color="inherit">

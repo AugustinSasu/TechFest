@@ -27,7 +27,7 @@ export default function LoginPage() {
   const location = useLocation();
   const from = location.state?.from?.pathname;
 
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
@@ -41,14 +41,17 @@ export default function LoginPage() {
 
   const onSubmit = async e => {
     e.preventDefault();
-    if (!email || !password) {
-      error?.('Please enter both email and password.');
+    if (!username || !password) {
+      error?.('Please enter both username and password.');
       return;
     }
-    const res = await login({ email, password, remember });
+    const res = await login({ username, password, remember });
     if (res.ok) {
       success?.('Welcome back!');
-      // navigate will happen by the useEffect above as soon as role is set
+      // redirect imediat (în caz că efectul nu rulează suficient de repede)
+      if (res.user?.role) {
+        navigate(getHomeForRole(res.user.role), { replace: true });
+      }
     } else {
       error?.(res.error || 'Login failed');
     }
@@ -66,11 +69,10 @@ export default function LoginPage() {
           </Box>
 
           <TextField
-            label="Email"
-            type="email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            autoComplete="email"
+            label="Username"
+            value={username}
+            onChange={e => setUsername(e.target.value)}
+            autoComplete="username"
             fullWidth
             required
           />
@@ -109,7 +111,7 @@ export default function LoginPage() {
           </Button>
 
           <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'center' }}>
-            Tip: backend login endpoint must be <code>{import.meta.env.VITE_API_BASE_URL}/auth/login</code>
+            Tip: backend login endpoint must be <code>{import.meta.env.VITE_API_BASE_URL}/api/employees/sign-in</code>
           </Typography>
 
           <Box sx={{ textAlign: 'center' }}>
@@ -118,7 +120,7 @@ export default function LoginPage() {
               onClick={() => navigate(ROUTES.LOGIN, { replace: true })}
               sx={{ background: 'none', border: 0, p: 0, m: 0, color: 'text.secondary', cursor: 'default' }}
             >
-              Need a different role? The server should return <b>user.role</b> as "manager" or "salesman".
+              Need a different role? The server should return <b>employee.role_code</b> as "MANAGER" sau "SALES".
             </Typography>
           </Box>
         </Stack>

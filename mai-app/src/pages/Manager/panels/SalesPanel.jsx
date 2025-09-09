@@ -19,9 +19,9 @@ function defaultFilters() {
 }
 
 export default function SalesPanel() {
-  const { token } = useAuth() || {};
+  const { employeeId } = useAuth() || {};
   const { error } = useSnackbar() || {};
-  const api = useMemo(() => createApiClient({ getToken: () => token }), [token]);
+  const api = useMemo(() => createApiClient(), [employeeId]);
   const manager = useMemo(() => createManagerService(api), [api]);
 
   const [filters, setFilters] = useState(defaultFilters());

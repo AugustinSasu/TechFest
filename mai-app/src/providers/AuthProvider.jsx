@@ -17,7 +17,8 @@ export function AuthProvider({ children }) {
   const [initializing, setInitializing] = useState(true);
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
+  // In noul flux nu mai folosim token, ci id-ul angajatului (employee_id)
+  const [employeeId, setEmployeeId] = useState(null);
 
   // Rehydrate from localStorage
   useEffect(() => {
@@ -26,7 +27,7 @@ export function AuthProvider({ children }) {
       if (raw) {
         const saved = JSON.parse(raw);
         setUser(saved.user || null);
-        setToken(saved.token || null);
+  setEmployeeId(saved.employeeId || null);
       }
     } catch (e) {
       console.warn('Failed to parse saved auth', e);
@@ -40,31 +41,31 @@ export function AuthProvider({ children }) {
     else localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(next));
   };
 
-  const login = async ({ email, password }) => {
+  const login = async ({ username, password }) => {
     setLoading(true);
     try {
       // ---------------- MOCK MODE ----------------
       if (USE_MOCKS) {
-        const role = (email || '').toLowerCase().includes('manager') ? 'manager' : 'salesman';
+        const role = (username || '').toLowerCase().includes('manager') ? 'manager' : 'salesman';
         const mockUser = {
-          id: 'u-' + role,
-          name: role === 'manager' ? 'Manager Mia' : 'Sales Sam',
-          email: email || `${role}@example.com`,
-          role
+          employee_id: 'u-' + role,
+          full_name: role === 'manager' ? 'Manager Mia' : 'Sales Sam',
+          db_username: username || role,
+          role_code: role === 'manager' ? 'MANAGER' : 'SALES'
         };
-        const mockToken = 'mock-token-' + role;
         setUser(mockUser);
-        setToken(mockToken);
-        saveAuth({ user: mockUser, token: mockToken });
+        setEmployeeId(mockUser.employee_id);
+        saveAuth({ user: mockUser, employeeId: mockUser.employee_id });
         return { ok: true, user: mockUser };
       }
 
       // --------------- REAL BACKEND ---------------
       if (!API_BASE_URL) throw new Error('Missing VITE_API_BASE_URL.');
-      const res = await fetch(`${API_BASE_URL}/auth/login`, {
+      // Endpoint specificat: http://127.0.0.1:8000/api/employees/sign-in
+      const res = await fetch(`${API_BASE_URL}/api/employees/sign-in`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ db_username: username, password })
       });
       if (!res.ok) {
         let msg = `Login failed (${res.status})`;
@@ -75,16 +76,21 @@ export function AuthProvider({ children }) {
         throw new Error(msg);
       }
       const data = await res.json();
-      if (!data?.token || !data?.user) throw new Error('Invalid login response (expected { token, user }).');
-
-      setUser(data.user);
-      setToken(data.token);
-      saveAuth({ user: data.user, token: data.token });
-      return { ok: true, user: data.user };
+      // Asteptam forma:
+      // { authenticated: true, employee: { employee_id, db_username, full_name, role_code, dealership_id } }
+      if (!data?.authenticated || !data?.employee) throw new Error('Invalid login response');
+      const emp = data.employee;
+      // Mapăm role_code -> rol intern (manager/salesman)
+      const mappedRole = emp.role_code === 'MANAGER' ? 'manager' : 'salesman';
+      const userObj = { ...emp, role: mappedRole };
+      setUser(userObj);
+      setEmployeeId(emp.employee_id);
+      saveAuth({ user: userObj, employeeId: emp.employee_id });
+      return { ok: true, user: userObj };
     } catch (err) {
       console.error(err);
       setUser(null);
-      setToken(null);
+      setEmployeeId(null);
       saveAuth(null);
       return { ok: false, error: err.message || 'Login failed' };
     } finally {
@@ -94,16 +100,14 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     try {
-      if (!USE_MOCKS && API_BASE_URL && token) {
+      if (!USE_MOCKS && API_BASE_URL && employeeId) {
         // best-effort; backend poate ignora lipsa endpoint-ului
-        fetch(`${API_BASE_URL}/auth/logout`, {
-          method: 'POST',
-          headers: { Authorization: `Bearer ${token}` }
-        }).catch(() => {});
+        // Daca exista un endpoint de logout il poți adăuga aici
+        // fetch(`${API_BASE_URL}/api/employees/logout`, { method: 'POST' }).catch(() => {});
       }
     } finally {
       setUser(null);
-      setToken(null);
+      setEmployeeId(null);
       saveAuth(null);
     }
   };
@@ -112,14 +116,27 @@ export function AuthProvider({ children }) {
     () => ({
       initializing,
       loading,
-      isAuthenticated: !!token,
+      isAuthenticated: !!employeeId,
       user,
-      token,
-      role: user?.role ?? null, // 'manager' | 'salesman'
+      employeeId,
+      role: user?.role ?? null, // 'manager' | 'salesman' (derivat din role_code)
+      refreshProfile: async () => {
+        if (!API_BASE_URL || !employeeId) return;
+        try {
+          const res = await fetch(`${API_BASE_URL}/api/employees/${employeeId}`);
+          if (res.ok) {
+            const emp = await res.json();
+            const mappedRole = emp.role_code === 'MANAGER' ? 'manager' : 'salesman';
+            const userObj = { ...emp, role: mappedRole };
+            setUser(userObj);
+            saveAuth({ user: userObj, employeeId });
+          }
+        } catch {}
+      },
       login,
       logout
     }),
-    [initializing, loading, token, user]
+    [initializing, loading, employeeId, user]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

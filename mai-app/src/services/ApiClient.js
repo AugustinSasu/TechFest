@@ -18,15 +18,11 @@ export default class ApiClient {
   /**
    * @param {{ baseUrl?: string, getToken?: ()=> (string|Promise<string>), onUnauthorized?: (res:any, data:any)=>void }} opts
    */
-  constructor({ baseUrl, getToken, onUnauthorized } = {}) {
+  constructor({ baseUrl } = {}) {
     this.baseUrl = baseUrl || import.meta.env.VITE_API_BASE_URL;
-    this._token = null;
-    this.getToken = typeof getToken === 'function' ? getToken : () => this._token;
-    this.onUnauthorized = onUnauthorized || (() => {});
   }
 
   setBaseUrl(url) { this.baseUrl = url; return this; }
-  setToken(token) { this._token = token; return this; }
 
   buildUrl(path, params) {
     if (!this.baseUrl) throw new Error('Missing VITE_API_BASE_URL.');
@@ -39,7 +35,7 @@ export default class ApiClient {
    * @param {string} path
    * @param {{ method?:string, params?:Object, body?:any, headers?:Object, skipAuth?:boolean, signal?:AbortSignal }} opts
    */
-  async request(path, { method = 'GET', params, body, headers, skipAuth = false, signal } = {}) {
+  async request(path, { method = 'GET', params, body, headers, signal } = {}) {
     // MOCK SHORT-CIRCUIT
     if (isMockEnabled()) {
       const data = await mockRequest(path, { method, params, body });
@@ -55,10 +51,7 @@ export default class ApiClient {
       ...(headers || {})
     };
 
-    if (!skipAuth) {
-      const token = await this.getToken?.();
-      if (token) finalHeaders.Authorization = `Bearer ${token}`;
-    }
+  // Authorization eliminat (folosim doar sesiune server-side sau alt mecanism)
 
     const res = await fetch(url, {
       method,
@@ -74,9 +67,7 @@ export default class ApiClient {
     }
 
     if (!res.ok) {
-      if (res.status === 401) {
-        try { this.onUnauthorized?.(res, data); } catch {}
-      }
+  // 401 handling simplificat
       const message = (data && (data.message || data.error)) || `HTTP ${res.status}`;
       throw new ApiError(message, { status: res.status, data, url, method });
     }
@@ -90,6 +81,6 @@ export default class ApiClient {
   delete(path, opts = {}) { return this.request(path, { ...opts, method: 'DELETE' }); }
 }
 
-export function createApiClient({ getToken, onUnauthorized } = {}) {
-  return new ApiClient({ baseUrl: import.meta.env.VITE_API_BASE_URL, getToken, onUnauthorized });
+export function createApiClient() {
+  return new ApiClient({ baseUrl: import.meta.env.VITE_API_BASE_URL });
 }

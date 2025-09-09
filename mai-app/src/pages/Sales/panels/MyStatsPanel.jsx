@@ -17,9 +17,9 @@ function initialFilters() {
 }
 
 export default function MyStatsPanel() {
-  const { token } = useAuth() || {};
+  const { employeeId } = useAuth() || {};
   const { error } = useSnackbar() || {};
-  const api = useMemo(() => createApiClient({ getToken: () => token }), [token]);
+  const api = useMemo(() => createApiClient(), [employeeId]);
   const sales = useMemo(() => createSalesService(api), [api]);
 
   const [filters, setFilters] = useState(initialFilters());
@@ -30,7 +30,8 @@ export default function MyStatsPanel() {
   const load = async () => {
     setLoading(true);
     try {
-      const data = await sales.getMyStats(filters);
+  if (!employeeId) throw new Error('Missing employee id');
+  const data = await sales.getStats(employeeId, filters);
       // Be generous with shape: accept { trend, target } or arrays directly
       setTrend(Array.isArray(data) ? data : (data?.trend || []));
       setTarget(Array.isArray(data?.target) ? data.target : []);
