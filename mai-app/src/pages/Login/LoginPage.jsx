@@ -2,9 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   Box,
   Button,
-  Checkbox,
   Container,
-  FormControlLabel,
   InputAdornment,
   Paper,
   Stack,
@@ -29,7 +27,7 @@ export default function LoginPage() {
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [remember, setRemember] = useState(true);
+  // Removed "remember me" feature per latest request
   const [showPassword, setShowPassword] = useState(false);
 
   // If already logged in, go home
@@ -45,7 +43,7 @@ export default function LoginPage() {
       error?.('Please enter both username and password.');
       return;
     }
-    const res = await login({ username, password, remember });
+  const res = await login({ username, password });
     if (res.ok) {
       success?.('Welcome back!');
       // redirect imediat (în caz că efectul nu rulează suficient de repede)
@@ -58,8 +56,16 @@ export default function LoginPage() {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ minHeight: '100%', display: 'grid', placeItems: 'center' }}>
-      <Paper sx={{ p: 4, width: '100%', borderRadius: 3 }}>
+    <Container maxWidth="md" sx={{ minHeight: '100%', display: 'grid', placeItems: 'center' }}>
+      <Paper
+        sx={{
+          p: { xs: 4, sm: 6 },
+          width: '100%',
+          maxWidth: 560,
+          borderRadius: 4,
+          mx: 'auto'
+        }}
+      >
         <Stack spacing={3} component="form" onSubmit={onSubmit} noValidate>
           <Box>
             <Typography variant="h4" fontWeight={700}>Sign in</Typography>
@@ -101,28 +107,9 @@ export default function LoginPage() {
             }}
           />
 
-          <FormControlLabel
-            control={<Checkbox checked={remember} onChange={e => setRemember(e.target.checked)} />}
-            label="Remember me"
-          />
-
           <Button type="submit" variant="contained" size="large" disabled={loading}>
             {loading ? 'Signing in…' : 'Sign in'}
           </Button>
-
-          <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'center' }}>
-            Tip: backend login endpoint must be <code>{import.meta.env.VITE_API_BASE_URL}/employees/sign-in</code>
-          </Typography>
-
-          <Box sx={{ textAlign: 'center' }}>
-            <Typography
-              component="button"
-              onClick={() => navigate(ROUTES.LOGIN, { replace: true })}
-              sx={{ background: 'none', border: 0, p: 0, m: 0, color: 'text.secondary', cursor: 'default' }}
-            >
-              Need a different role? The server should return <b>employee.role_code</b> as "MANAGER" sau "SALES".
-            </Typography>
-          </Box>
         </Stack>
       </Paper>
     </Container>
