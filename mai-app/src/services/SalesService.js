@@ -9,23 +9,23 @@ export default class SalesService {
 
   /** All endpoints now require employeeId */
   getSummary(employeeId, params) {
-    return this.api.get(`/api/employees/${encodeURIComponent(employeeId)}/summary`, params);
+    return this.api.get(`/employees/${encodeURIComponent(employeeId)}/summary`, params);
   }
 
   getStats(employeeId, params) {
-    return this.api.get(`/api/employees/${encodeURIComponent(employeeId)}/stats`, params);
+    return this.api.get(`/employees/${encodeURIComponent(employeeId)}/stats`, params);
   }
 
   getAchievements(employeeId) {
-    return this.api.get(`/api/employees/${encodeURIComponent(employeeId)}/achievements`);
+    return this.api.get(`/employees/${encodeURIComponent(employeeId)}/achievements`);
   }
 
   getFeedback(employeeId) {
-    return this.api.get(`/api/employees/${encodeURIComponent(employeeId)}/feedback`);
+    return this.api.get(`/employees/${encodeURIComponent(employeeId)}/feedback`);
   }
 
   ackFeedback(employeeId, id) {
-    return this.api.post(`/api/employees/${encodeURIComponent(employeeId)}/feedback/${encodeURIComponent(id)}/ack`);
+    return this.api.post(`/employees/${encodeURIComponent(employeeId)}/feedback/${encodeURIComponent(id)}/ack`);
   }
 }
 

@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createApiClient } from '../services/ApiClient';
+import { createAuthService } from '../services/AuthService';
 
 const AuthContext = createContext(null);
 
@@ -41,6 +43,9 @@ export function AuthProvider({ children }) {
     else localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(next));
   };
 
+  const api = useMemo(() => createApiClient(), []);
+  const authService = useMemo(() => createAuthService(api), [api]);
+
   const login = async ({ username, password }) => {
     setLoading(true);
     try {
@@ -60,22 +65,8 @@ export function AuthProvider({ children }) {
       }
 
       // --------------- REAL BACKEND ---------------
-      if (!API_BASE_URL) throw new Error('Missing VITE_API_BASE_URL.');
-      // Endpoint specificat: http://127.0.0.1:8000/api/employees/sign-in
-      const res = await fetch(`${API_BASE_URL}/api/employees/sign-in`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ db_username: username, password })
-      });
-      if (!res.ok) {
-        let msg = `Login failed (${res.status})`;
-        try {
-          const err = await res.json();
-          if (err?.message) msg = err.message;
-        } catch {}
-        throw new Error(msg);
-      }
-      const data = await res.json();
+  if (!API_BASE_URL) throw new Error('Missing VITE_API_BASE_URL.');
+  const data = await authService.signIn({ db_username: username, password });
       // Asteptam forma:
       // { authenticated: true, employee: { employee_id, db_username, full_name, role_code, dealership_id } }
       if (!data?.authenticated || !data?.employee) throw new Error('Invalid login response');
@@ -123,14 +114,11 @@ export function AuthProvider({ children }) {
       refreshProfile: async () => {
         if (!API_BASE_URL || !employeeId) return;
         try {
-          const res = await fetch(`${API_BASE_URL}/api/employees/${employeeId}`);
-          if (res.ok) {
-            const emp = await res.json();
-            const mappedRole = emp.role_code === 'MANAGER' ? 'manager' : 'salesman';
-            const userObj = { ...emp, role: mappedRole };
-            setUser(userObj);
-            saveAuth({ user: userObj, employeeId });
-          }
+          const emp = await authService.getEmployee(employeeId);
+          const mappedRole = emp.role_code === 'MANAGER' ? 'manager' : 'salesman';
+          const userObj = { ...emp, role: mappedRole };
+          setUser(userObj);
+          saveAuth({ user: userObj, employeeId });
         } catch {}
       },
       login,

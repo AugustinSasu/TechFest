@@ -111,7 +111,7 @@ export default function LoginPage() {
           </Button>
 
           <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'center' }}>
-            Tip: backend login endpoint must be <code>{import.meta.env.VITE_API_BASE_URL}/api/employees/sign-in</code>
+            Tip: backend login endpoint must be <code>{import.meta.env.VITE_API_BASE_URL}/employees/sign-in</code>
           </Typography>
 
           <Box sx={{ textAlign: 'center' }}>

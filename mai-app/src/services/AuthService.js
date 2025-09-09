@@ -10,28 +10,18 @@ import ApiClient from './ApiClient';
  */
 export default class AuthService {
   /** @param {ApiClient} api */
-  constructor(api) {
-    this.api = api;
+  constructor(api) { this.api = api; }
+
+  /** @param {{ db_username:string, password:string }} payload */
+  signIn(payload) {
+    // With base URL already including /api
+    return this.api.post('/employees/sign-in', payload);
   }
 
-  /** @param {{email:string,password:string}} payload */
-  login(payload) {
-    return this.api.post('/auth/login', payload, { skipAuth: true });
-  }
-
-  logout() {
-    return this.api.post('/auth/logout', null).catch(() => ({}));
-  }
-
-  getProfile() {
-    return this.api.get('/auth/me');
-  }
-
-  refreshToken() {
-    return this.api.post('/auth/refresh', null, { skipAuth: true });
+  /** @param {number|string} employeeId */
+  getEmployee(employeeId) {
+    return this.api.get(`/employees/${encodeURIComponent(employeeId)}`);
   }
 }
 
-export function createAuthService(api) {
-  return new AuthService(api);
-}
+export function createAuthService(api) { return new AuthService(api); }
