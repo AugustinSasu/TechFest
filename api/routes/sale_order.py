@@ -253,39 +253,6 @@ def list_sale_orders(
 ):
     return SaleOrderService.list(db, status, customer_id, sort, limit, offset)
 
-@router.get("/{order_id}", response_model=SaleOrderOut)
-def get_sale_order(order_id: int, db: Session = Depends(get_db)):
-    order = SaleOrderService.get(db, order_id)
-    if not order:
-        raise HTTPException(status_code=404, detail="Sale order not found")
-    return order
-
-@router.post("/", status_code=status.HTTP_201_CREATED, response_model=SaleOrderOut)
-def create_sale_order(payload: SaleOrderCreate, db: Session = Depends(get_db)):
-    return SaleOrderService.create(db, payload)
-
-@router.put("/{order_id}", response_model=SaleOrderOut)
-def update_sale_order(order_id: int, payload: SaleOrderUpdate, db: Session = Depends(get_db)):
-    order = SaleOrderService.update(db, order_id, payload)
-    if not order:
-        raise HTTPException(status_code=404, detail="Sale order not found")
-    return order
-
-@router.delete("/{order_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_sale_order(order_id: int, db: Session = Depends(get_db)):
-    ok = SaleOrderService.delete(db, order_id)
-    if not ok:
-        raise HTTPException(status_code=404, detail="Sale order not found")
-    return
-
-
-# 🔄 Nou: returnează toate comenzile pentru un agent
-@router.get("/by-employee/{employee_id}", response_model=List[SaleOrderOut])
-def get_orders_by_employee(employee_id: int, db: Session = Depends(get_db)):
-    return SaleOrderService.list_by_salesperson(db, employee_id)
-
-
-# 
 
 # 🔄 Endpoint: /sale-orders/filter?start-date=...&end-date=...&employee_id=...
 @router.get("/filter", response_model=List[SaleOrderOut])
@@ -314,3 +281,36 @@ def filter_sale_orders_by_date(
     params = {"start": start_date, "end": end_date, "emp": employee_id}
     rows = db.execute(stmt, params).mappings().all()
     return [SaleOrderOut(**row) for row in rows]
+
+
+# 🔄 Nou: returnează toate comenzile pentru un agent
+@router.get("/by-employee/{employee_id}", response_model=List[SaleOrderOut])
+def get_orders_by_employee(employee_id: int, db: Session = Depends(get_db)):
+    return SaleOrderService.list_by_salesperson(db, employee_id)
+
+
+
+@router.get("/{order_id}", response_model=SaleOrderOut)
+def get_sale_order(order_id: int, db: Session = Depends(get_db)):
+    order = SaleOrderService.get(db, order_id)
+    if not order:
+        raise HTTPException(status_code=404, detail="Sale order not found")
+    return order
+
+@router.post("/", status_code=status.HTTP_201_CREATED, response_model=SaleOrderOut)
+def create_sale_order(payload: SaleOrderCreate, db: Session = Depends(get_db)):
+    return SaleOrderService.create(db, payload)
+
+@router.put("/{order_id}", response_model=SaleOrderOut)
+def update_sale_order(order_id: int, payload: SaleOrderUpdate, db: Session = Depends(get_db)):
+    order = SaleOrderService.update(db, order_id, payload)
+    if not order:
+        raise HTTPException(status_code=404, detail="Sale order not found")
+    return order
+
+@router.delete("/{order_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_sale_order(order_id: int, db: Session = Depends(get_db)):
+    ok = SaleOrderService.delete(db, order_id)
+    if not ok:
+        raise HTTPException(status_code=404, detail="Sale order not found")
+    return
