@@ -133,7 +133,7 @@ def sales_orders_trends(
         raise HTTPException(status_code=400, detail="granulatie trebuie să fie 1 (săptămână), 2 (lună) sau 3 (an).")
 
     # Filtre data + status
-    date_filters = ["so.status = 'INVOICED'"]
+    date_filters = ["so.status = 'APPROVED'"]
     params = {}
     if start_date:
         date_filters.append("TRUNC(so.order_date) >= :start_date")
