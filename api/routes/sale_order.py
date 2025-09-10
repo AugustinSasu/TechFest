@@ -284,3 +284,33 @@ def delete_sale_order(order_id: int, db: Session = Depends(get_db)):
 def get_orders_by_employee(employee_id: int, db: Session = Depends(get_db)):
     return SaleOrderService.list_by_salesperson(db, employee_id)
 
+
+# 
+
+# 🔄 Endpoint: /sale-orders/filter?start-date=...&end-date=...&employee_id=...
+@router.get("/filter", response_model=List[SaleOrderOut])
+def filter_sale_orders_by_date(
+    start_date_s: Optional[str] = Query(None, alias="start-date"),
+    end_date_s: Optional[str] = Query(None, alias="end-date"),
+    employee_id: Optional[int] = Query(None),
+    db: Session = Depends(get_db),
+):
+    """
+    Returnează comenzile de vânzare dintr-un interval dat, opțional filtrate după `employee_id`.
+    Exemplu:
+      /api/sale-orders/filter?start-date=2023-01-01&end-date=2023-12-31
+      /api/sale-orders/filter?start-date=2023-01-01&end-date=2023-12-31&employee_id=5
+    """
+    start_date = _norm_date(start_date_s, "start-date")
+    end_date = _norm_date(end_date_s, "end-date")
+
+    stmt = text("""
+        SELECT * FROM sale_order
+        WHERE (:start IS NULL OR TRUNC(order_date) >= :start)
+          AND (:end IS NULL OR TRUNC(order_date) <= :end)
+          AND (:emp IS NULL OR salesperson_id = :emp)
+        ORDER BY order_date DESC
+    """)
+    params = {"start": start_date, "end": end_date, "emp": employee_id}
+    rows = db.execute(stmt, params).mappings().all()
+    return [SaleOrderOut(**row) for row in rows]
