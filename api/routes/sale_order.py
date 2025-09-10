@@ -255,7 +255,7 @@ def list_sale_orders(
 
 
 
-@router.get("/filter", response_model=List[SaleOrderOut])
+@router.get("/filter", response_model=List[SalesOrderStatOut])
 def filter_sale_orders_by_date(
     start_date_s: Optional[str] = Query(None, alias="start-date"),
     end_date_s: Optional[str] = Query(None, alias="end-date"),
