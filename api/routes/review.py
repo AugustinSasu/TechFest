@@ -16,8 +16,15 @@ svc = ReviewService()
 # ---------- CRUD ----------
 @router.post("", response_model=ReviewOut, status_code=status.HTTP_201_CREATED)
 def create_review(payload: ReviewCreate, db: Session = Depends(get_db)):
-    row = svc.create(db, payload)
-    return ReviewOut.model_validate(row)
+    try:
+        row = svc.create(db, payload)
+        db.flush()
+        db.commit()
+        db.refresh(row)
+        return ReviewOut.model_validate(row)
+    except Exception:
+        db.rollback()
+        raise
 
 @router.get("", response_model=List[ReviewOut])
 def list_reviews(
