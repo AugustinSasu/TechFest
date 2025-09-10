@@ -23,7 +23,6 @@ export default function FeedbackPanel() {
       // Map API review -> FeedbackItem shape
       const mapped = arr.map(r => ({
         id: r.review_id,
-        title: `Manager Review #${r.review_id}`,
         body: r.review_text,
         createdAt: r.review_date,
         read: true // no ack mechanism provided in new API

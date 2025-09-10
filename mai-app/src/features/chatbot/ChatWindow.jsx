@@ -19,7 +19,11 @@ const uid = () =>
  */
 export default function ChatWindow({ presets = [], initialMessages = [] }) {
   const { error } = useSnackbar() || {};
-  const [messages, setMessages] = useState(initialMessages);
+  // Init messages with welcome once (avoid StrictMode double effect duplication)
+  const [messages, setMessages] = useState(() => {
+    if (initialMessages.length) return initialMessages;
+    return [{ id: uid(), author: 'ai', content: 'Welcome! Enter your business objective.', createdAt: new Date().toISOString() }];
+  });
   const [busy, setBusy] = useState(false);
 
   // Secretary style multi-step state
@@ -225,12 +229,7 @@ export default function ChatWindow({ presets = [], initialMessages = [] }) {
     }
   };
 
-  useEffect(() => {
-    if (!messages.length) {
-      add({ author: 'ai', content: 'Welcome! Enter your business objective.' });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // Removed effect that added welcome message (caused duplication in React StrictMode)
 
   const presetItems = useMemo(() => presets, [presets]);
 

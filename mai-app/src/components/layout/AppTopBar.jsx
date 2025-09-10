@@ -31,7 +31,7 @@ export default function AppTopBar({ onMenuClick, showMenuButton = true }) {
           <Typography variant="body2" color="text.secondary" sx={{ mr: 2 }}>
             {user
               ? (role === 'salesman'
-                  ? (user.db_username || user.full_name || 'User')
+                  ? (user.full_name || user.db_username || 'User')
                   : `${user.full_name || user.db_username || 'User'}${role ? ` · ${role}` : ''}`)
               : appName}
           </Typography>

@@ -1,16 +1,11 @@
 import React from 'react';
 import { decodeMisencodedUTF8 } from '../../utils/formatters';
 import {
-  Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, Typography
+  Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography
 } from '@mui/material';
 
 export default function AgentsTable({
   rows = [],
-  page = 0,
-  rowsPerPage = 10,
-  total = rows.length,
-  onPageChange,
-  onRowsPerPageChange,
   onRowClick,
   loading = false,
 }) {
@@ -54,15 +49,7 @@ export default function AgentsTable({
         </Table>
       </TableContainer>
 
-      <TablePagination
-        component="div"
-        rowsPerPageOptions={[5, 10, 25]}
-        count={total}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={(_e, newPage) => onPageChange?.(newPage)}
-        onRowsPerPageChange={(e) => onRowsPerPageChange?.(parseInt(e.target.value, 10))}
-      />
+  {/* Pagination removed as per requirement */}
     </Paper>
   );
 }
