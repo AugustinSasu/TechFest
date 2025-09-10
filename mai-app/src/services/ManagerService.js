@@ -22,8 +22,8 @@ export default class ManagerService {
     // și NU trimitem granularitatea (rămâne doar pentru summary/trends).
     // Păstrăm fallback la vechiul endpoint dacă lipsesc datele.
     const p = params || {};
-    const startDate = p['start-date'] || p.startDate;
-    const endDate = p['end-date'] || p.endDate;
+    const startDate = p['start_date'] || p.startDate;
+    const endDate = p['end_date'] || p.endDate;
     if (startDate && endDate) {
       // Excludem duplicatele și granularitatea din query (nu e nevoie pentru listă)
       const { ['start-date']: _sd, ['end-date']: _ed, startDate: _sds, endDate: _eds, granulatie, granularity, ...rest } = p;
