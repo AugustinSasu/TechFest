@@ -15,11 +15,9 @@ export default function SalesKPIs({ summary = {}, trend = [] }) {
 
   return (
     <Grid container spacing={2}>
-      <Grid item xs={12} sm={6} md={3}><StatCard title="Revenue" value={Intl.NumberFormat().format(revenue)} delta={deltaRevenuePct} /></Grid>
-      <Grid item xs={12} sm={6} md={3}><StatCard title="Deals" value={deals} /></Grid>
-      <Grid item xs={12} sm={6} md={3}><StatCard title="Win Rate" value={`${winRatePct}%`} /></Grid>
-      <Grid item xs={12} sm={6} md={3}><GoalProgressCard title="Quota" value={revenue} target={target} /></Grid>
-      <Grid item xs={12}><KPITrendCard title="Revenue Trend" value={Intl.NumberFormat().format(revenue)} data={trend} /></Grid>
+      <Grid item xs={12} sm={6} md={3}><StatCard title="Revenue" value={Intl.NumberFormat().format(summary.venit)} delta={deltaRevenuePct} /></Grid>
+      <Grid item xs={12} sm={6} md={3}><StatCard title="Deals" value={summary.vanzari_incheiate} /></Grid>
+      <Grid item xs={12}><KPITrendCard title="Revenue Trend" value={Intl.NumberFormat().format(summary.venit)} data={trend} /></Grid>
     </Grid>
   );
 }

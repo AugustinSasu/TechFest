@@ -35,13 +35,16 @@ export default function SalesPanel() {
     setLoading(true);
     try {
       // 1. KPI summary (păstrăm apelul existent)
-      const summaryPromise = manager.getSalesSummary({ ...filters });
+      const summaryPromise = manager.getSalesSummary({ 'start_date': filters['start-date'], 'end_date': filters['end-date'], 'granulatie': filters['granulatie']});
       // 2. Unic apel pentru tabel: /sale-orders/filter?start-date=...&end-date=...
-      const list = await manager.getSalesList({ 'start-date': filters['start-date'], 'end-date': filters['end-date'] });
+      const list = await manager.getSalesList({ 'start_date': filters['start-date'], 'end_date': filters['end-date'] });
       const rows = Array.isArray(list) ? list : (list?.items || []);
       const sum = await summaryPromise;
+      console.log('SalesPanel.load: got summary', sum, 'and rows', rows.length);
       setSummary(sum || {});
-      setTrend(sum?.trend || []);
+  // Fix: map sum.trend_vanzari to a list of suma_incasata items
+  const values = Array.isArray(sum?.trend_vanzari) ? sum.trend_vanzari.map(item => item.suma_incasata) : [];
+  setTrend(values);
       setRows(rows);
     } catch (e) {
       error?.(e.message || 'Failed to load sales');
