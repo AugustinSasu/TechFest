@@ -1,3 +1,18 @@
+# --- GRADE SYSTEM: bronze, silver, gold ---
+def get_employee_grade(sales_count: int, unique_models: int, unique_services: int) -> str:
+    """
+    Returns the grade for an employee based on simple thresholds:
+    - Bronze: default
+    - Silver: at least 10 sales and at least 3 unique models/services
+    - Gold: at least 20 sales and at least 5 unique models/services
+    """
+    if sales_count >= 20 and (unique_models + unique_services) >= 5:
+        return 'gold'
+    elif sales_count >= 10 and (unique_models + unique_services) >= 3:
+        return 'silver'
+    else:
+        return 'bronze'
+
 import requests
 import re
 # ---------- DATA AGGREGATION UTILITY ----------

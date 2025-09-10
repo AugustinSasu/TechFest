@@ -1,4 +1,3 @@
-
 # === Importuri unice ===
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -17,7 +16,13 @@ from ai_secretary_cli import (
     ManagerPrompt
 )
 
-# === Instanță unică FastAPI ===
+# === Endpoint to get grade for a specific employee using OpenAI completion (separate from chatbot) ===
+
+from fastapi import Query
+import openai
+import os
+
+# Place after app = FastAPI()
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
@@ -26,6 +31,61 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# === Endpoint to get grade for a specific employee using OpenAI completion (separate from chatbot) ===
+@app.get("/employee_grade_openai")
+def employee_grade_openai(employee_id: int = Query(...)):
+    """
+    Returns the grade (bronze/silver/gold) for a given employee_id using OpenAI completion, based on sales and diversity.
+    """
+    all_data = fetch_all_core_data()
+    sale_orders = [o for o in all_data.get('sale_orders', []) if o.get('salesperson_id') == employee_id]
+    sales_count = len(sale_orders)
+    car_items = [c for c in all_data.get('car_sale_items', []) if c.get('order_id') in {o.get('order_id') for o in sale_orders}]
+    total_models = len(car_items)
+    service_items = [s for s in all_data.get('service_sale_items', []) if s.get('order_id') in {o.get('order_id') for o in sale_orders}]
+    total_services = len(service_items)
+    auto_sales = total_models
+    service_sales = total_services
+    prompt = f"""
+You are an expert business analyst. Based on the following employee's performance, assign a grade: bronze, silver, or gold.
+Rules:
+- Bronze: default, for low or new performers.
+- Silver: assign if the employee has at least 5 car sales OR at least 3 service sales (either condition is enough).
+- Gold: assign if the employee has at least 10 car sales OR at least 5 service sales (either condition is enough).
+If the employee does not meet the exact threshold for silver or gold, do not assign that grade. Be strict and do not round up. Return only the grade (bronze, silver, or gold), no explanation.
+
+Examples:
+- 9 car sales, 0 service sales → silver
+- 10 car sales, 0 service sales → gold
+- 5 car sales, 3 service sales → silver
+- 10 car sales, 5 service sales → gold
+- 5 car sales, 2 service sales → silver
+
+Employee stats:
+Car sales: {auto_sales}
+Service sales: {service_sales}
+"""
+    openai.api_key = os.getenv("OPENAI_API_KEY")
+    response = openai.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": "You are an expert business analyst. Based on the following employee's performance, assign a grade: bronze, silver, or gold. Rules: Bronze: default, for low or new performers. Silver: assign if the employee has at least 5 car sales OR at least 3 service sales (either condition is enough). Gold: assign if the employee has at least 10 car sales OR at least 5 service sales (either condition is enough). If the employee does not meet the exact threshold for silver or gold, do not assign that grade. Be strict and do not round up. Return only the grade (bronze, silver, or gold), no explanation. Examples: 9 car sales, 0 service sales → silver; 10 car sales, 0 service sales → gold; 5 car sales, 3 service sales → silver; 10 car sales, 5 service sales → gold; 5 car sales, 2 service sales → silver."},
+            {"role": "user", "content": prompt}
+        ],
+        max_tokens=10,
+        temperature=0
+    )
+    grade = response.choices[0].message.content.strip().lower()
+    return {
+        "employee_id": employee_id,
+        "grade": grade,
+        "sales_count": sales_count,
+        "auto_sales": auto_sales,
+        "service_sales": service_sales
+    }
+
+
 
 # === Modele Pydantic ===
 class GoalRequest(BaseModel):

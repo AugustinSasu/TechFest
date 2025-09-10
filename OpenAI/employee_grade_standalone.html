@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Verificare Nivel Angajat</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 0; }
+        .container { max-width: 400px; margin: 60px auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px #0001; padding: 32px; }
+        h2 { text-align: center; }
+        .input-row { display: flex; gap: 8px; margin-bottom: 12px; }
+        input { flex: 1; padding: 8px; border-radius: 4px; border: 1px solid #ccc; }
+        button { padding: 8px 16px; border: none; border-radius: 4px; background: #1976d2; color: #fff; cursor: pointer; }
+        button:disabled { background: #aaa; }
+        #gradeResult { margin-top: 16px; font-size: 16px; }
+        .error { color: #b71c1c; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Check Employee Level</h2>
+    <div class="input-row">
+        <input type="number" id="employeeIdInput" placeholder="Employee ID" min="1" />
+        <button id="checkGradeBtn">Check Level</button>
+    </div>
+    <div id="gradeResult"></div>
+</div>
+<script>
+const API_URL = 'http://localhost:1919';
+const employeeIdInput = document.getElementById('employeeIdInput');
+const checkGradeBtn = document.getElementById('checkGradeBtn');
+const gradeResult = document.getElementById('gradeResult');
+
+checkGradeBtn.onclick = async () => {
+    const empId = parseInt(employeeIdInput.value.trim());
+    if (!empId) {
+    gradeResult.innerHTML = '<span class="error">Please enter a valid ID!</span>';
+        return;
+    }
+    gradeResult.innerHTML = 'Checking...';
+    try {
+        const res = await fetch(`${API_URL}/employee_grade_openai?employee_id=${empId}`)
+            .then(r => r.json());
+        if (res.grade) {
+            let next = '';
+            const autoSales = res.auto_sales || 0;
+            const serviceSales = res.service_sales || 0;
+            let toSilver = '';
+            let toGold = '';
+            // Silver threshold: 5 car sales AND 2 service sales
+            let hasSilver = (autoSales >= 5 || serviceSales >= 3);
+            let hasGold = (autoSales >= 10 || serviceSales >= 5);
+            if (!hasSilver) {
+                let needs = [];
+                if (autoSales < 5 && serviceSales < 3) {
+                    needs.push(`${5-autoSales} more car sales`);
+                    needs.push(`${3-serviceSales} more service sales`);
+                } else if (autoSales < 5) {
+                    needs.push(`${5-autoSales} more car sales`);
+                } else if (serviceSales < 3) {
+                    needs.push(`${3-serviceSales} more service sales`);
+                }
+                next = needs.length ? `To reach silver: you need ${needs.join(' and ')}.` : '';
+            } else if (!hasGold) {
+                let needs = [];
+                if (autoSales < 10 && serviceSales < 5) {
+                    // Afișează doar diferența minimă necesară pentru a atinge gold
+                    if ((10-autoSales) <= (5-serviceSales)) {
+                        needs.push(`${10-autoSales} more car sales`);
+                    } else {
+                        needs.push(`${5-serviceSales} more service sales`);
+                    }
+                } else if (autoSales < 10) {
+                    needs.push(`${10-autoSales} more car sales`);
+                } else if (serviceSales < 5) {
+                    needs.push(`${5-serviceSales} more service sales`);
+                }
+                next = needs.length ? `To reach gold: you need ${needs.join(' and ')}.` : '';
+            } else {
+                next = '';
+            }
+            gradeResult.innerHTML = `<b>Level:</b> <span style="color:#1976d2;text-transform:uppercase">${res.grade}</span><br>
+                <b>Car sales:</b> ${res.auto_sales ?? '-'} &nbsp; <b>Service sales:</b> ${res.service_sales ?? '-'}<br>
+                <span style=\"color:#555\">${next}</span>`;
+        } else {
+            gradeResult.innerHTML = '<span class="error">Could not determine the level.</span>';
+        }
+    } catch (e) {
+    gradeResult.innerHTML = '<span class="error">Error while checking.</span>';
+    }
+};
+</script>
+</body>
+</html>
