@@ -12,8 +12,8 @@ export default class SalesService {
     return this.api.get(`/employees/${encodeURIComponent(employeeId)}/summary`, params);
   }
 
-  getStats(employeeId, params) {
-    return this.api.get(`/employees/${encodeURIComponent(employeeId)}/stats`, params);
+  getSales(employeeId, params) {
+    return this.api.get(`/sale-orders/filter`, {...params, "employee_id": employeeId});
   }
 
   getAchievements(employeeId) {

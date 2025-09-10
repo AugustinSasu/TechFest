@@ -33,22 +33,27 @@ export default function SalesTable({
               <TableCell>Region</TableCell>
             </TableRow>
           </TableHead>
+
           <TableBody>
-            {rows.map((r) => (
-              <TableRow
-                key={r.order_id || r.sale_id || r.id}
-                hover
-                sx={{ cursor: onRowClick ? 'pointer' : 'default' }}
-                onClick={() => onRowClick?.(r)}
-              >
-                <TableCell>{r.full_name || r.agent || r.agentId || r.created_by || r.salesperson_id || '-'}</TableCell>
-                <TableCell>{r.location || r.nume_locatie || r.dealership_id || '-'}</TableCell>
-                <TableCell>{r.produs || r.serviceName || r.vehicleModel || r.status || '-'}</TableCell>
-                <TableCell align="right">{fmtCurrency(r.pret || r.total_amount)}</TableCell>
-                <TableCell>{fmtDate(r.data_vanzare || r.order_date)}</TableCell>
-                <TableCell>{r.region || r.regiune || '-'}</TableCell>
-              </TableRow>
-            ))}
+            {rows.map((r, idx) => {
+              // Compose a unique key from all possible id fields and index
+              const key = [r.order_id, r.sale_id, r.id, idx].filter(Boolean).join('-');
+              return (
+                <TableRow
+                  key={key}
+                  hover
+                  sx={{ cursor: onRowClick ? 'pointer' : 'default' }}
+                  onClick={() => onRowClick?.(r)}
+                >
+                  <TableCell>{r.full_name || r.agent || r.agentId || r.created_by || r.salesperson_id || '-'}</TableCell>
+                  <TableCell>{r.location || r.nume_locatie || r.dealership_id || '-'}</TableCell>
+                  <TableCell>{r.produs || r.serviceName || r.vehicleModel || r.status || '-'}</TableCell>
+                  <TableCell align="right">{fmtCurrency(r.pret || r.total_amount)}</TableCell>
+                  <TableCell>{fmtDate(r.data_vanzare || r.order_date)}</TableCell>
+                  <TableCell>{r.region || r.regiune || '-'}</TableCell>
+                </TableRow>
+              );
+            })}
 
             {empty && (
               <TableRow>
