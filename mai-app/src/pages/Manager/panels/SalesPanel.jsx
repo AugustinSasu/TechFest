@@ -11,9 +11,10 @@ import { createApiClient } from '../../../services/ApiClient';
 import { createManagerService } from '../../../services/ManagerService';
 
 function defaultFilters() {
-  const end_date = new Date();
-  const start_date = new Date();
-  start_date.setDate(end_date.getDate() - 29);
+  // Fixed default end date requested: 01/01/2025 (dd/mm/yyyy) -> 2025-01-01 ISO
+  const end_date = new Date('2025-01-01T00:00:00');
+  const start_date = new Date(end_date);
+  start_date.setDate(end_date.getDate() - 29); // keep 30-day window
   const toISO = d => d.toISOString().slice(0, 10);
   return { "granulatie": 1, "start-date": toISO(start_date), "end-date": toISO(end_date) };
 }
@@ -28,29 +29,23 @@ export default function SalesPanel() {
   const [summary, setSummary] = useState(null);
   const [trend, setTrend] = useState([]);
   const [rows, setRows] = useState([]);
-  const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRpp] = useState(10);
   const [loading, setLoading] = useState(false);
 
-  const load = async (opts = {}) => {
+  const load = async () => {
     setLoading(true);
-    const { page: pg = page, pageSize = rowsPerPage } = opts;
     try {
-      const [sum, list] = await Promise.all([
-        manager.getSalesSummary({ ...filters }),
-        manager.getSalesList({ ...filters, page: pg, pageSize })
-      ]);
-      console.log('SalesPanel.load', { sum, list });  
+      // 1. KPI summary (păstrăm apelul existent)
+      const summaryPromise = manager.getSalesSummary({ ...filters });
+      // 2. Unic apel pentru tabel: /sale-orders/filter?start-date=...&end-date=...
+      const list = await manager.getSalesList({ 'start-date': filters['start-date'], 'end-date': filters['end-date'] });
+      const rows = Array.isArray(list) ? list : (list?.items || []);
+      const sum = await summaryPromise;
       setSummary(sum || {});
       setTrend(sum?.trend || []);
-      setRows(list?.items || list || []);
-      setTotal(list?.total ?? (list?.items?.length ?? 0));
-      setPage(pg);
+      setRows(rows);
     } catch (e) {
       error?.(e.message || 'Failed to load sales');
       setRows([]);
-      setTotal(0);
     } finally {
       setLoading(false);
     }
@@ -58,8 +53,8 @@ export default function SalesPanel() {
 
   useEffect(() => { load(); /* eslint-disable-next-line */ }, []);
 
-  const apply = () => load({ page: 0 });
-  const reset = () => { setFilters(defaultFilters()); setTimeout(() => load({ page: 0 }), 0); };
+  const apply = () => load();
+  const reset = () => { setFilters(defaultFilters()); setTimeout(() => load(), 0); };
 
   return (
     <Stack spacing={2}>
@@ -69,7 +64,7 @@ export default function SalesPanel() {
           onChange={setFilters}
           onApply={apply}
           onReset={reset}
-          granularities={['saptamana', 'luna','an']} // optionally populate from backend
+          granularities={['week', 'month', 'year']} // renamed from RO to EN per request
         />
       </PageSection>
 
@@ -83,12 +78,8 @@ export default function SalesPanel() {
         ) : (
           <SalesTable
             rows={rows}
-            total={total}
-            page={page}
-            rowsPerPage={rowsPerPage}
             loading={loading}
-            onPageChange={(p) => load({ page: p })}
-            onRowsPerPageChange={(n) => { setRpp(n); load({ pageSize: n, page: 0 }); }}
+            disablePagination
           />
         )}
       </PageSection>

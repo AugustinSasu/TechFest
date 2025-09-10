@@ -1,4 +1,5 @@
 import React from 'react';
+import { decodeMisencodedUTF8 } from '../../utils/formatters';
 import {
   Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, Typography
 } from '@mui/material';
@@ -34,7 +35,7 @@ export default function AgentsTable({
           <TableBody>
             {rows.map((r) => (
               <TableRow key={r.id} hover sx={{ cursor: onRowClick ? 'pointer' : 'default' }} onClick={() => onRowClick?.(r)}>
-                <TableCell>{r.full_name}</TableCell>
+                <TableCell>{decodeMisencodedUTF8(r.full_name)}</TableCell>
                 <TableCell>{r.region || randomChoice(['Romania', 'USA', 'UK', 'Germany', 'France'])}</TableCell>
                 <TableCell align="right">{Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(r.revenue || 30000 + Math.random() * 40000)}</TableCell>
                 <TableCell align="right">{r.achievementsCount ?? randomChoice([1, 2, 3, 4, 5])}</TableCell>

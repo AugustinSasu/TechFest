@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Stack } from '@mui/material';
 import PageSection from '../../../components/common/PageSection';
 import AgentsTable from '../../../components/tables/AgentsTable';
-import AgentDetailsDrawer from '../../../features/agents/AgentDetailsDrawer';
 import { useAuth } from '../../../hooks/useAuth';
 import { useSnackbar } from '../../../hooks/useSnackbar';
 import { createApiClient } from '../../../services/ApiClient';
@@ -20,10 +19,7 @@ export default function AgentsPanel() {
   const [rowsPerPage, setRpp] = useState(10);
   const [loading, setLoading] = useState(false);
 
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [selectedAgent, setSelectedAgent] = useState(null);
-  const [agentAchievements, setAgentAchievements] = useState([]);
-  const [agentFeedback, setAgentFeedback] = useState([]);
+  // Drawer & detailed agent view removed per latest requirement.
 
   const load = async (opts = {}) => {
     setLoading(true);
@@ -43,19 +39,7 @@ export default function AgentsPanel() {
 
   useEffect(() => { load(); /* eslint-disable-next-line */ }, []);
 
-  const openDetails = async (agent) => {
-    setSelectedAgent(agent);
-    setDrawerOpen(true);
-    try {
-      const details = await manager.getAgentDetails(agent.id);
-      // Expecting { agent, achievements, feedback } but we handle generous shapes
-      setAgentAchievements(details?.achievements || details?.agent?.achievements || []);
-      setAgentFeedback(details?.feedback || details?.agent?.feedback || []);
-    } catch (e) {
-      error?.(e.message || 'Failed to load agent details');
-      setAgentAchievements([]); setAgentFeedback([]);
-    }
-  };
+  // openDetails removed.
 
   return (
     <Stack spacing={2}>
@@ -68,17 +52,9 @@ export default function AgentsPanel() {
           loading={loading}
           onPageChange={(p) => load({ page: p })}
           onRowsPerPageChange={(n) => { setRpp(n); load({ pageSize: n, page: 0 }); }}
-          onRowClick={openDetails}
         />
       </PageSection>
-
-      <AgentDetailsDrawer
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        agent={selectedAgent}
-        achievements={agentAchievements}
-        feedback={agentFeedback}
-      />
+      {/* AgentDetailsDrawer removed */}
     </Stack>
   );
 }

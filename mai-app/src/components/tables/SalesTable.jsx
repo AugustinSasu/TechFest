@@ -12,6 +12,7 @@ export default function SalesTable({
   onRowsPerPageChange,
   onRowClick,
   loading = false,
+  disablePagination = false,
 }) {
   const empty = !loading && rows.length === 0;
 
@@ -24,10 +25,9 @@ export default function SalesTable({
         <Table stickyHeader size="small">
           <TableHead>
             <TableRow>
-              <TableCell>ID</TableCell>
               <TableCell>Agent</TableCell>
               <TableCell>Location</TableCell>
-              <TableCell>Product/Service</TableCell>
+              <TableCell>Product/Service / Status</TableCell>
               <TableCell align="right">Amount</TableCell>
               <TableCell>Date</TableCell>
               <TableCell>Region</TableCell>
@@ -36,18 +36,17 @@ export default function SalesTable({
           <TableBody>
             {rows.map((r) => (
               <TableRow
-                key={r.id}
+                key={r.order_id || r.sale_id || r.id}
                 hover
                 sx={{ cursor: onRowClick ? 'pointer' : 'default' }}
                 onClick={() => onRowClick?.(r)}
               >
-                <TableCell>{r.sale_id}</TableCell>
-                <TableCell>{r.agent || r.agentId}</TableCell>
-                <TableCell>{r.nume_locatie || r.dealership_id || '-'}</TableCell>
-                <TableCell>{r.produs || r.serviceName || r.vehicleModel || '-'}</TableCell>
-                <TableCell align="right">{fmtCurrency(r.pret)}</TableCell>
-                <TableCell>{fmtDate(r.data_vanzare)}</TableCell>
-                <TableCell>{r.regiune || '-'}</TableCell>
+                <TableCell>{r.full_name || r.agent || r.agentId || r.created_by || r.salesperson_id || '-'}</TableCell>
+                <TableCell>{r.location || r.nume_locatie || r.dealership_id || '-'}</TableCell>
+                <TableCell>{r.produs || r.serviceName || r.vehicleModel || r.status || '-'}</TableCell>
+                <TableCell align="right">{fmtCurrency(r.pret || r.total_amount)}</TableCell>
+                <TableCell>{fmtDate(r.data_vanzare || r.order_date)}</TableCell>
+                <TableCell>{r.region || r.regiune || '-'}</TableCell>
               </TableRow>
             ))}
 
@@ -64,15 +63,17 @@ export default function SalesTable({
         </Table>
       </TableContainer>
 
-      <TablePagination
-        component="div"
-        rowsPerPageOptions={[5, 10, 25]}
-        count={total}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={(_e, newPage) => onPageChange?.(newPage)}
-        onRowsPerPageChange={(e) => onRowsPerPageChange?.(parseInt(e.target.value, 10))}
-      />
+      {!disablePagination && (onPageChange || onRowsPerPageChange) && (
+        <TablePagination
+          component="div"
+          rowsPerPageOptions={[5, 10, 25]}
+          count={total}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={(_e, newPage) => onPageChange?.(newPage)}
+          onRowsPerPageChange={(e) => onRowsPerPageChange?.(parseInt(e.target.value, 10))}
+        />
+      )}
     </Paper>
   );
 }

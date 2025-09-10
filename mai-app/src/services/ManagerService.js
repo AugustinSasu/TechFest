@@ -17,8 +17,24 @@ export default class ManagerService {
 
   /** @param {{page?:number,pageSize?:number,query?:string,startDate?:string,endDate?:string,region?:string}} params */
   getSalesList(params) {
+    // Nou requirement corectat: pentru tabel folosim endpoint:
+    //   GET /sale-orders/filter?start-date=YYYY-MM-DD&end-date=YYYY-MM-DD
+    // și NU trimitem granularitatea (rămâne doar pentru summary/trends).
+    // Păstrăm fallback la vechiul endpoint dacă lipsesc datele.
+    const p = params || {};
+    const startDate = p['start-date'] || p.startDate;
+    const endDate = p['end-date'] || p.endDate;
+    if (startDate && endDate) {
+      // Excludem duplicatele și granularitatea din query (nu e nevoie pentru listă)
+      const { ['start-date']: _sd, ['end-date']: _ed, startDate: _sds, endDate: _eds, granulatie, granularity, ...rest } = p;
+      return this.api.get('/sale-orders/filter', { 'start-date': startDate, 'end-date': endDate, ...rest });
+    }
+    // fallback vechi comportament
     return this.api.get('/sale-orders/stats', params);
   }
+
+  /** Get single sale order detail by id */
+  // Detaliile individuale / dealership / employee nu mai sunt necesare pentru tabelul simplificat.
 
   /** @param {{page?:number,pageSize?:number,region?:string}} params */
   getAgents(params) {

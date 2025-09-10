@@ -60,3 +60,30 @@ export function safeNumber(v, fallback = 0) {
   const n = Number(v);
   return Number.isFinite(n) ? n : fallback;
 }
+
+/**
+ * Attempt to fix strings where UTF-8 bytes were decoded as Latin-1 / Windows-1252,
+ * resulting in sequences like 'LazÃ£r' instead of 'Lazăr'. Heuristic: re-encode
+ * the string as ISO-8859-1 bytes then decode as UTF-8. If the resulting text has
+ * fewer replacement chars (�) and contains common diacritics, we return it.
+ * Non-destructive: falls back to original if no improvement.
+ */
+export function decodeMisencodedUTF8(str) {
+  if (!str || typeof str !== 'string') return str;
+  // Quick check: if already contains Romanian diacritics, keep.
+  if (/[ăâîșşţțĂÂÎȘŞŢȚ]/.test(str)) return str;
+  try {
+    // Encode current (mistaken) Unicode string to bytes as latin1
+    const bytes = new Uint8Array(str.length);
+    for (let i = 0; i < str.length; i++) bytes[i] = str.charCodeAt(i) & 0xFF;
+    const decoded = new TextDecoder('utf-8', { fatal: false }).decode(bytes);
+    // If decoded introduces target diacritics and reduces number of replacement chars, use it.
+    const replBefore = (str.match(/\uFFFD/g) || []).length;
+    const replAfter = (decoded.match(/\uFFFD/g) || []).length;
+    const hasDiacritics = /[ăâîșşţțĂÂÎȘŞŢȚ]/.test(decoded);
+    if (hasDiacritics && (replAfter < replBefore || replBefore === 0)) return decoded;
+    return str;
+  } catch {
+    return str;
+  }
+}
