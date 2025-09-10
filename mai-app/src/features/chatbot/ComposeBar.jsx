@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Box, Button, Stack, TextField } from '@mui/material';
+import { Button, Stack, TextField } from '@mui/material';
 
 /**
  * Props: disabled, onSend(text)
  */
-export default function ComposeBar({ disabled = false, onSend }) {
+export default function ComposeBar({ disabled = false, onSend, placeholder = 'Type here…' }) {
   const [value, setValue] = useState('');
 
   const send = () => {
@@ -24,7 +24,7 @@ export default function ComposeBar({ disabled = false, onSend }) {
   return (
     <Stack direction="row" spacing={1} sx={{ p: 1, borderTop: theme => `1px solid ${theme.palette.divider}` }}>
       <TextField
-        placeholder="Write a prompt…"
+        placeholder={placeholder}
         value={value}
         onChange={e => setValue(e.target.value)}
         onKeyDown={onKeyDown}
@@ -34,25 +34,14 @@ export default function ComposeBar({ disabled = false, onSend }) {
         maxRows={6}
         fullWidth
       />
-      <Stack direction="row" spacing={1} sx={{ minWidth: 260 }}>
-        <Button
-          variant="contained"
-          onClick={send}
-          disabled={disabled || !value.trim()}
-          sx={{ flex: 1, minWidth: 120, height: 40 }}
-        >
-          Send
-        </Button>
-        <Button
-          variant="outlined"
-          color="secondary"
-          onClick={() => { if (value.trim()) { onRecommend?.(value.trim()); setValue(''); } }}
-          disabled={disabled || !value.trim()}
-          sx={{ flex: 1, minWidth: 120, height: 40 }}
-        >
-          Send Recommendation
-        </Button>
-      </Stack>
+      <Button
+        variant="contained"
+        onClick={send}
+        disabled={disabled || !value.trim()}
+        sx={{ minWidth: 120, height: 40 }}
+      >
+        Send
+      </Button>
     </Stack>
   );
 }
