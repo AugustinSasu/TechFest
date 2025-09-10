@@ -255,7 +255,6 @@ def list_sale_orders(
 
 
 
-# 🔄 Endpoint: /sale-orders/filter?start-date=...&end-date=...&employee_id=...
 @router.get("/filter", response_model=List[SaleOrderOut])
 def filter_sale_orders_by_date(
     start_date_s: Optional[str] = Query(None, alias="start-date"),
@@ -265,15 +264,17 @@ def filter_sale_orders_by_date(
 ):
     """
     Returnează comenzile de vânzare dintr-un interval dat, opțional filtrate după `employee_id`.
-    Exemplu:
-      /api/sale-orders/filter?start-date=2023-01-01&end-date=2023-12-31
-      /api/sale-orders/filter?start-date=2023-01-01&end-date=2023-12-31&employee_id=5
+    Acceptă cazuri speciale precum employee_id="", "null", "undefined", etc.
     """
     start_date = _norm_date(start_date_s, "start-date")
     end_date = _norm_date(end_date_s, "end-date")
 
-    # Validare și conversie employee_id
-    if employee_id == "" or employee_id is None:
+    # ✅ Protecție pentru valori nevalide sau frontend inconsistencies
+    if (
+        employee_id is None or
+        employee_id.strip() == "" or
+        employee_id.strip().lower() in ("null", "none", "undefined")
+    ):
         employee_id_int = None
     else:
         try:
