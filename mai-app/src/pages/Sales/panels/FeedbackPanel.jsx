@@ -17,30 +17,30 @@ export default function FeedbackPanel() {
 
   const load = async () => {
     try {
-  if (!employeeId) return;
-  const list = await sales.getFeedback(employeeId);
-      setItems(Array.isArray(list) ? list : (list?.items || []));
+      if (!employeeId) return;
+      const list = await sales.getReviews(employeeId);
+      const arr = Array.isArray(list) ? list : (list?.items || []);
+      // Map API review -> FeedbackItem shape
+      const mapped = arr.map(r => ({
+        id: r.review_id,
+        title: `Manager Review #${r.review_id}`,
+        body: r.review_text,
+        createdAt: r.review_date,
+        read: true // no ack mechanism provided in new API
+      }));
+      setItems(mapped);
     } catch (e) {
-      error?.(e.message || 'Failed to load feedback');
+      error?.(e.message || 'Failed to load reviews');
       setItems([]);
     }
   };
 
   useEffect(() => { load(); /* eslint-disable-next-line */ }, []);
 
-  const ack = async (item) => {
-    try {
-  if (!employeeId) return;
-  await sales.ackFeedback(employeeId, item.id);
-      success?.('Acknowledged');
-      setItems(prev => prev.map(x => (x.id === item.id ? { ...x, read: true } : x)));
-    } catch (e) {
-      error?.(e.message || 'Failed to acknowledge');
-    }
-  };
+  const ack = () => {}; // Acknowledge disabled for new reviews API
 
   return (
-    <PageSection title="Feedback from Manager">
+  <PageSection title="Manager Reviews">
       {!items.length ? (
         <EmptyState title="No feedback yet" />
       ) : (

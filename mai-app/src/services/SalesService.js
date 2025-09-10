@@ -24,6 +24,11 @@ export default class SalesService {
     return this.api.get(`/employees/${encodeURIComponent(employeeId)}/feedback`);
   }
 
+  // New reviews endpoint: /reviews/by-salesperson/{salesperson_id}
+  getReviews(employeeId) {
+    return this.api.get(`/reviews/by-salesperson/${encodeURIComponent(employeeId)}`);
+  }
+
   ackFeedback(employeeId, id) {
     return this.api.post(`/employees/${encodeURIComponent(employeeId)}/feedback/${encodeURIComponent(id)}/ack`);
   }
