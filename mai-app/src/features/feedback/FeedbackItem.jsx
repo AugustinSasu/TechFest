@@ -14,7 +14,7 @@ export default function FeedbackItem({ item, onAcknowledge }) {
         <Divider />
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'center' }}>
           <Typography variant="caption" color="text.secondary">
-            {item.createdAt ? new Date(item.createdAt).toLocaleString() : ''}
+            {item.createdAt ? new Date(item.createdAt).toLocaleDateString() : ''}
           </Typography>
           {!item.read && (
             <Button size="small" onClick={() => onAcknowledge?.(item)} sx={{ ml: 'auto' }}>
