@@ -23,7 +23,7 @@ export default function AppTopBar({ onMenuClick, showMenuButton = true }) {
       <Container maxWidth="lg">
         <Toolbar disableGutters sx={{ gap: 2 }}>
           <Box onClick={goHome} sx={{ cursor: 'pointer' }}>
-            <Logo size={26} withText />
+            <Logo size={50} withText />
           </Box>
 
           <Box sx={{ flexGrow: 1 }} />
