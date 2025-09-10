@@ -40,10 +40,59 @@ class RecommendationRequest(BaseModel):
     style: Optional[str] = "friendly"
     performance_level: Optional[str] = None
 
+
 class ReviewRequest(BaseModel):
     manager_id: int
     salesperson_id: int
     review_text: str
+
+# Pentru trimitere grupată
+class GroupReviewRequest(BaseModel):
+    group: str  # 'low', 'medium', 'high', 'all'
+    review_text: str
+    manager_id: Optional[int] = 1
+from ai_secretary_cli import ai_classify_employee_performance
+@app.post("/send_group_review")
+def send_group_review(req: GroupReviewRequest):
+    """
+    Primește grupa ('low', 'medium', 'high', 'all') și mesajul, trimite review la toți angajații din grupă.
+    """
+    all_data = fetch_all_core_data()
+    # Clasifică angajații pe grupe
+    performance = ai_classify_employee_performance(all_data)
+    group_map = {
+        "low": "underperformers",
+        "medium": "average",
+        "high": "overperformers"
+    }
+    groups = []
+    if req.group == "all":
+        groups = ["underperformers", "average", "overperformers"]
+    elif req.group in group_map:
+        groups = [group_map[req.group]]
+    else:
+        return {"success": False, "msg": "Invalid group."}
+    # Trimite review la fiecare angajat din grupă
+    results = []
+    for group in groups:
+        for emp in performance.get(group, []):
+            salesperson_id = emp.get('id') or emp.get('employee_id') or emp.get('dealer_id')
+            name = emp.get('name') or emp.get('full_name') or salesperson_id
+            url = "http://localhost:8000/api/reviews"
+            payload = {
+                "manager_id": req.manager_id or 1,
+                "salesperson_id": salesperson_id,
+                "review_text": req.review_text
+            }
+            try:
+                response = requests.post(url, json=payload)
+                if response.status_code in (200, 201):
+                    results.append({"salesperson_id": salesperson_id, "name": name, "success": True})
+                else:
+                    results.append({"salesperson_id": salesperson_id, "name": name, "success": False, "error": response.text})
+            except Exception as e:
+                results.append({"salesperson_id": salesperson_id, "name": name, "success": False, "error": str(e)})
+    return {"success": True, "results": results, "msg": f"Sent to {len(results)} employees."}
 
 # === Endpointuri ===
 

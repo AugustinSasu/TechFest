@@ -349,14 +349,49 @@ class KPIService:
 
 # ---------- LLM helpers ----------
 def _openai_chat(model: str, system_msg: str, user_msg: str, temperature: float = 0.2) -> str:
+    # Assistant API v2: persistent thread, agentic reasoning
     if not OPENAI_API_KEY:
         raise RuntimeError("OPENAI_API_KEY is not set.")
-    url = "https://api.openai.com/v1/chat/completions"
-    headers = {"Authorization": f"Bearer {OPENAI_API_KEY}", "Content-Type": "application/json"}
-    payload = {"model": model, "messages":[{"role":"system","content":system_msg},{"role":"user","content":user_msg}], "temperature": temperature}
-    r = requests.post(url, headers=headers, json=payload, timeout=60)
-    r.raise_for_status()
-    return r.json()["choices"][0]["message"]["content"]
+    import time
+    headers = {
+        "Authorization": f"Bearer {OPENAI_API_KEY}",
+        "OpenAI-Beta": "assistants=v2",
+        "Content-Type": "application/json"
+    }
+    # 1. Creează asistentul (sau folosește unul existent)
+    assistant_payload = {
+        "instructions": system_msg,
+        "model": model
+    }
+    a_resp = requests.post("https://api.openai.com/v1/assistants", headers=headers, json=assistant_payload, timeout=60)
+    a_resp.raise_for_status()
+    assistant_id = a_resp.json()["id"]
+    # 2. Creează thread
+    t_resp = requests.post("https://api.openai.com/v1/threads", headers=headers, timeout=60)
+    t_resp.raise_for_status()
+    thread_id = t_resp.json()["id"]
+    # 3. Trimite mesajul user
+    msg_payload = {"role": "user", "content": user_msg}
+    m_resp = requests.post(f"https://api.openai.com/v1/threads/{thread_id}/messages", headers=headers, json=msg_payload, timeout=60)
+    m_resp.raise_for_status()
+    # 4. Rulează asistentul pe thread
+    run_payload = {"assistant_id": assistant_id}
+    run_resp = requests.post(f"https://api.openai.com/v1/threads/{thread_id}/runs", headers=headers, json=run_payload, timeout=60)
+    run_resp.raise_for_status()
+    run_id = run_resp.json()["id"]
+    # 5. Polling pentru finalizare
+    for _ in range(60):
+        run_status = requests.get(f"https://api.openai.com/v1/threads/{thread_id}/runs/{run_id}", headers=headers, timeout=60).json()
+        if run_status["status"] == "completed":
+            break
+        time.sleep(2)
+    # 6. Obține răspunsul final
+    messages = requests.get(f"https://api.openai.com/v1/threads/{thread_id}/messages", headers=headers, timeout=60).json()
+    for msg in messages["data"]:
+        if msg["role"] == "assistant":
+            # Extrage doar textul principal
+            return msg["content"][0]["text"]["value"]
+    raise RuntimeError("No assistant response received.")
 
 @dataclass
 class ManagerPrompt:
@@ -487,6 +522,41 @@ def compose_message(
 
     return _openai_chat(MODEL_MESSAGE, system, user, 0.2).strip()
 
+def ai_classify_employee_performance(all_data: dict, business_goal: str = None, period_days: int = 30) -> dict:
+    """
+    Trimite toate datele brute la Assistant API și cere să clasifice angajații în underperformers, average, overperformers.
+    Returnează dict cu chei: underperformers, average, overperformers (fiecare listă de dict cu nume, id, dealership, motiv).
+    """
+    import json
+    today_str = __import__('datetime').date.today().strftime('%B %d, %Y')
+    system = (
+        f"Today is {today_str}. "
+        "You are an expert business analyst for a car dealership group. "
+        "You receive ALL raw data tables (sale_orders, car_sale_items, service_sale_items, dealerships, employees, customers, vehicles, service_items). "
+        f"{'The manager\'s business objective is: \'%s\'. ' % business_goal if business_goal else ''}"
+        f"Analyze the most recent {period_days} days of data. "
+        "Your task: Based strictly on the data, classify all employees (salespersons) into three groups: underperformers (below target), average, and overperformers (above target). "
+        "For each employee, provide: id, name, dealership, region, and a short reason (e.g. 'sales 30% below avg', 'top 10% revenue', etc). "
+        "If possible, estimate the target from the data (e.g. average or median sales). Do NOT use any local statistics, only what you deduce from the data. "
+        "Return STRICT JSON with three keys: underperformers, average, overperformers. Each is a list of employee objects as described. No extra text, no explanations."
+    )
+    user = json.dumps({"all_data": all_data}, ensure_ascii=False)
+    try:
+        result = _openai_chat(MODEL_MESSAGE, system, user, 0.2)
+        # Extrage JSON robust (code block sau direct)
+        import re
+        match = re.search(r"```json\\s*([\\s\\S]+?)```", result)
+        if match:
+            json_str = match.group(1).strip()
+            return json.loads(json_str)
+        # fallback: caută primul { ... }
+        s, e = result.find("{"), result.rfind("}") + 1
+        if s != -1 and e > s:
+            return json.loads(result[s:e])
+        raise ValueError("Could not extract JSON from response")
+    except Exception as e:
+        return {"error": str(e)}
+
 # ---------- Seed synthetic data ----------
 def optional_seed(repo: SalesRepository, dealers=6, days=60, region="DE"):
     """
@@ -587,7 +657,7 @@ def main():
 
     # Trimite toate datele brute la OpenAI pentru analiză și raport
     print("\n=== DATA SUMMARY (SELECTED PERIOD) ===")
-    # Doar tabele relevante pentru perioada selectată
+    # Doar tabelele relevante pentru perioada selectată
     def filter_by_period(rows, date_keys, horizon):
         if not rows or not horizon:
             return rows
@@ -767,7 +837,7 @@ def main():
 
     # Accept/rewrite/edit and save message (for manager record)
     while True:
-        act = input("\nManager, please review the message. Type [A]pprove / [R]egenerate / [E]dit manually: ").strip().lower()
+        act = input("\nManager, please review the message. Type [A]pprove / [R]egenerate / [E]dit manually / [G]roup send: ").strip().lower()
         if act.startswith("r"):
             new_style = input("Alternative style (professional/motivational): ").strip() or "professional"
             message = compose_message(goal, selected, new_style, kpis_preview=kpis_preview)
@@ -786,10 +856,60 @@ def main():
             print("\n===== MANUAL MESSAGE =====")
             print(message)
             continue
+        elif act.startswith("g"):
+            # === TRIMITERE GRUPATĂ ===
+            print("\nSelect group to send: [L]ow / [M]edium / [H]igh / [A]ll")
+            group_choice = input("Group: ").strip().lower()
+            # Obține clasificarea angajaților
+            performance = ai_classify_employee_performance(all_data, business_goal=goal, period_days=horizon)
+            group_map = {"l": "underperformers", "m": "average", "h": "overperformers"}
+            group_to_level = {"underperformers": "low", "average": "medium", "overperformers": "high"}
+            groups = []
+            if group_choice == "a":
+                groups = ["underperformers", "average", "overperformers"]
+            elif group_choice in group_map:
+                groups = [group_map[group_choice]]
+            else:
+                print("Invalid group choice.")
+                continue
+            # Generează mesajele pentru fiecare grupă
+            messages = {}
+            for group in groups:
+                level = group_to_level[group]
+                messages[group] = compose_message(goal, selected, style=style, kpis_preview=kpis_preview, performance_level=level)
+            # Trimite la fiecare angajat din grupă
+            try:
+                manager_id = int(input("Enter your manager_id for review records: ").strip())
+            except Exception:
+                manager_id = 1
+            def send_review(manager_id, salesperson_id, review_text):
+                url = "http://localhost:8000/api/reviews"
+                payload = {
+                    "manager_id": manager_id,
+                    "salesperson_id": salesperson_id,
+                    "review_text": review_text
+                }
+                try:
+                    response = requests.post(url, json=payload)
+                    if response.status_code in (200, 201):
+                        print(f"✅ Review created for salesperson_id={salesperson_id}.")
+                    else:
+                        print(f"❌ Failed to create review for salesperson_id={salesperson_id}: {response.text}")
+                except Exception as e:
+                    print(f"❌ Error sending review for salesperson_id={salesperson_id}: {e}")
+            for group in groups:
+                msg = messages[group]
+                for emp in performance.get(group, []):
+                    salesperson_id = emp.get('id') or emp.get('employee_id') or emp.get('dealer_id')
+                    name = emp.get('name') or emp.get('full_name') or salesperson_id
+                    send_review(manager_id, salesperson_id, msg)
+                    print(f"Message sent to {name} (id={salesperson_id}) [group: {group}]")
+            print("\n✅ Group message(s) sent.")
+            break
         elif act.startswith("a"):
             break
         else:
-            print("Type A, R or E.")
+            print("Type A, R, E, or G.")
 
     # After approval, send the final message to all underperformers
 

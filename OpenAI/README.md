@@ -1,3 +1,12 @@
+# Installation
+
+To install the required Python packages for the backend, run:
+
+```powershell
+pip install -r ..\backend\requirements.txt
+```
+
+Make sure you are using the correct Python environment.
 # OpenAI Business Assistant - How to Run
 
 ## Backend (API)
