@@ -254,12 +254,13 @@ def list_sale_orders(
     return SaleOrderService.list(db, status, customer_id, sort, limit, offset)
 
 
+
 # 🔄 Endpoint: /sale-orders/filter?start-date=...&end-date=...&employee_id=...
 @router.get("/filter", response_model=List[SaleOrderOut])
 def filter_sale_orders_by_date(
     start_date_s: Optional[str] = Query(None, alias="start-date"),
     end_date_s: Optional[str] = Query(None, alias="end-date"),
-    employee_id: Optional[int] = Query(None),
+    employee_id: Optional[str] = Query(None),
     db: Session = Depends(get_db),
 ):
     """
@@ -271,6 +272,15 @@ def filter_sale_orders_by_date(
     start_date = _norm_date(start_date_s, "start-date")
     end_date = _norm_date(end_date_s, "end-date")
 
+    # Validare și conversie employee_id
+    if employee_id == "" or employee_id is None:
+        employee_id_int = None
+    else:
+        try:
+            employee_id_int = int(employee_id)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="employee_id trebuie să fie un număr întreg.")
+
     stmt = text("""
         SELECT * FROM sale_order
         WHERE (:start IS NULL OR TRUNC(order_date) >= :start)
@@ -278,9 +288,10 @@ def filter_sale_orders_by_date(
           AND (:emp IS NULL OR salesperson_id = :emp)
         ORDER BY order_date DESC
     """)
-    params = {"start": start_date, "end": end_date, "emp": employee_id}
+    params = {"start": start_date, "end": end_date, "emp": employee_id_int}
     rows = db.execute(stmt, params).mappings().all()
     return [SaleOrderOut(**row) for row in rows]
+
 
 
 # 🔄 Nou: returnează toate comenzile pentru un agent
