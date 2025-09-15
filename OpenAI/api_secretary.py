@@ -1,10 +1,12 @@
-# === Importuri unice ===
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
 import datetime as dt
 import requests
+from fastapi import Query
+import openai
+import os
 from ai_secretary_cli import (
     fetch_all_core_data,
     validate_goal_with_ai,
@@ -16,13 +18,7 @@ from ai_secretary_cli import (
     ManagerPrompt
 )
 
-# === Endpoint to get grade for a specific employee using OpenAI completion (separate from chatbot) ===
 
-from fastapi import Query
-import openai
-import os
-
-# Place after app = FastAPI()
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
