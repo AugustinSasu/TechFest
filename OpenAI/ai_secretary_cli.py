@@ -1,6 +1,7 @@
 import requests
 import re
 
+
 def fetch_all_core_data(api_base_url="http://localhost:8000/api"):
     """
     Preia datele brute din toate endpointurile principale pentru analiză completă.
