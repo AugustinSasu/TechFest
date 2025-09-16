@@ -1,4 +1,9 @@
+# Features
 
+## Secretary Chat & Employee Grade
+
+- Secretary Chat: AI interface for recommendations, messaging, and business analysis, all in a conversational chat format.
+- Employee Grade: On the right side of the chat, you can check the performance level of any employee (bronze/silver/gold) based on backend data. Enter the employee ID and instantly see their level, sales, and what is needed for the next level.
 
 # Installation
 
@@ -28,4 +33,3 @@ Make sure you are using the correct Python environment.
 
 ### Classic UI (with dropdowns)
 - Open `frontend_secretary_full.html` in your browser for the full interface with classic selection options.
-
