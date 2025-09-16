@@ -4,9 +4,10 @@ from pydantic import BaseModel
 from typing import List, Optional
 import datetime as dt
 import requests
-from fastapi import Query
+from fastapi import Query, Request
 import openai
 import os
+from ai_secretary_cli import ai_classify_employee_performance
 from ai_secretary_cli import (
     fetch_all_core_data,
     validate_goal_with_ai,
@@ -82,11 +83,10 @@ Service sales: {service_sales}
     }
 
 
-
-# === Modele Pydantic ===
 class GoalRequest(BaseModel):
     goal: str
     horizon: Optional[int] = None
+
 
 class RecommendationRequest(BaseModel):
     goal: str
@@ -102,12 +102,13 @@ class ReviewRequest(BaseModel):
     salesperson_id: int
     review_text: str
 
-# Pentru trimitere grupată
+
 class GroupReviewRequest(BaseModel):
     group: str  # 'low', 'medium', 'high', 'all'
     review_text: str
     manager_id: Optional[int] = 1
-from ai_secretary_cli import ai_classify_employee_performance
+
+
 @app.post("/send_group_review")
 def send_group_review(req: GroupReviewRequest):
     """
@@ -150,10 +151,8 @@ def send_group_review(req: GroupReviewRequest):
                 results.append({"salesperson_id": salesperson_id, "name": name, "success": False, "error": str(e)})
     return {"success": True, "results": results, "msg": f"Sent to {len(results)} employees."}
 
-# === Endpointuri ===
 
 @app.post("/recommendations")
-
 def recommendations(req: RecommendationRequest):
     all_data = fetch_all_core_data()
     sales_rows = []
@@ -227,6 +226,7 @@ def recommendations(req: RecommendationRequest):
     recommendations = generate_recommendations(kpis_preview, prompt, ai_summary=ai_summary)
     return {"recommendations": recommendations, "kpis_preview": kpis_preview, "ai_summary": ai_summary}
 
+
 @app.post("/compose_message")
 def compose_team_message(req: RecommendationRequest):
     all_data = fetch_all_core_data()
@@ -275,6 +275,7 @@ def compose_team_message(req: RecommendationRequest):
     message = compose_message(req.goal, selected, req.style, kpis_preview=kpis_preview, performance_level=req.performance_level)
     return {"message": message}
 
+
 @app.post("/send_review")
 def send_review(req: ReviewRequest):
     url = "http://localhost:8000/api/reviews"
@@ -292,7 +293,6 @@ def send_review(req: ReviewRequest):
     except Exception as e:
         return {"success": False, "msg": f"Error sending review: {e}"}
 
-from fastapi import Request
 
 @app.post("/data_summary")
 async def data_summary(request: Request):
@@ -326,112 +326,6 @@ async def data_summary(request: Request):
         report = f"[ERROR] LLM analysis failed: {e}"
     return {"ai_summary": report}
 
-@app.get("/")
-def root():
-    return {"status": "API is running"}
-
-@app.post("/validate_goal")
-def validate_goal(req: GoalRequest):
-    result = validate_goal_with_ai(req.goal)
-    if not result.get("is_valid", False):
-        result["why"] = "Your objective is incomplete. Please specify a region and a time window. Example: 'Increase the sales for Passat in all regions in the next 30 days.'"
-        result["suggested"] = make_concrete_fallback(req.goal)
-    return result
-
-
-@app.post("/recommendations")
-def recommendations(req: RecommendationRequest):
-    all_data = fetch_all_core_data()
-    sales_rows = []
-    for item in all_data.get("car_sale_items", []):
-        sales_rows.append({
-            "dealer_id": item.get("dealership_id", item.get("dealer_id", "UNKNOWN")),
-            "date": item.get("date", item.get("order_date", dt.date.today().isoformat())),
-            "region": item.get("region", "-"),
-            "tier": item.get("tier", "-"),
-            "leads": float(item.get("leads", 1)),
-            "deals": float(item.get("deals", 1)),
-            "revenue": float(item.get("revenue", item.get("amount", 0))),
-            "points": float(item.get("points", 0)),
-            "type": "car"
-        })
-    for item in all_data.get("service_items", []):
-        sales_rows.append({
-            "dealer_id": item.get("dealership_id", item.get("dealer_id", "UNKNOWN")),
-            "date": item.get("date", item.get("order_date", dt.date.today().isoformat())),
-            "region": item.get("region", "-"),
-            "tier": item.get("tier", "-"),
-            "leads": float(item.get("leads", 1)),
-            "deals": float(item.get("deals", 1)),
-            "revenue": float(item.get("revenue", item.get("amount", 0))),
-            "points": float(item.get("points", 0)),
-            "type": "service"
-        })
-    for item in all_data.get("service_sale_item", []):
-        sales_rows.append({
-            "dealer_id": item.get("dealership_id", item.get("dealer_id", "UNKNOWN")),
-            "date": item.get("date", item.get("order_date", dt.date.today().isoformat())),
-            "region": item.get("region", "-"),
-            "tier": item.get("tier", "-"),
-            "leads": float(item.get("leads", 1)),
-            "deals": float(item.get("deals", 1)),
-            "revenue": float(item.get("revenue", item.get("amount", 0))),
-            "points": float(item.get("points", 0)),
-            "type": "service_sale"
-        })
-    kpi_service = KPIService()
-    _, kpis_preview = kpi_service.compute(sales_rows, since_days=req.horizon)
-    prompt = ManagerPrompt(goal=req.goal, horizon_days=req.horizon, filters={"region": req.region} if req.region else None)
-    recommendations = generate_recommendations(kpis_preview, prompt)
-    return {"recommendations": recommendations, "kpis_preview": kpis_preview}
-
-@app.post("/compose_message")
-def compose_team_message(req: RecommendationRequest):
-    all_data = fetch_all_core_data()
-    sales_rows = []
-    for item in all_data.get("car_sale_items", []):
-        sales_rows.append({
-            "dealer_id": item.get("dealership_id", item.get("dealer_id", "UNKNOWN")),
-            "date": item.get("date", item.get("order_date", dt.date.today().isoformat())),
-            "region": item.get("region", "-"),
-            "tier": item.get("tier", "-"),
-            "leads": float(item.get("leads", 1)),
-            "deals": float(item.get("deals", 1)),
-            "revenue": float(item.get("revenue", item.get("amount", 0))),
-            "points": float(item.get("points", 0)),
-            "type": "car"
-        })
-    for item in all_data.get("service_items", []):
-        sales_rows.append({
-            "dealer_id": item.get("dealership_id", item.get("dealer_id", "UNKNOWN")),
-            "date": item.get("date", item.get("order_date", dt.date.today().isoformat())),
-            "region": item.get("region", "-"),
-            "tier": item.get("tier", "-"),
-            "leads": float(item.get("leads", 1)),
-            "deals": float(item.get("deals", 1)),
-            "revenue": float(item.get("revenue", item.get("amount", 0))),
-            "points": float(item.get("points", 0)),
-            "type": "service"
-        })
-    for item in all_data.get("service_sale_item", []):
-        sales_rows.append({
-            "dealer_id": item.get("dealership_id", item.get("dealer_id", "UNKNOWN")),
-            "date": item.get("date", item.get("order_date", dt.date.today().isoformat())),
-            "region": item.get("region", "-"),
-            "tier": item.get("tier", "-"),
-            "leads": float(item.get("leads", 1)),
-            "deals": float(item.get("deals", 1)),
-            "revenue": float(item.get("revenue", item.get("amount", 0))),
-            "points": float(item.get("points", 0)),
-            "type": "service_sale"
-        })
-    kpi_service = KPIService()
-    _, kpis_preview = kpi_service.compute(sales_rows, since_days=req.horizon)
-    prompt = ManagerPrompt(goal=req.goal, horizon_days=req.horizon, filters={"region": req.region} if req.region else None)
-    recommendations = generate_recommendations(kpis_preview, prompt)
-    selected = [recommendations[i] for i in (req.selected or [0]) if i < len(recommendations)]
-    message = compose_message(req.goal, selected, req.style, kpis_preview=kpis_preview)
-    return {"message": message}
 
 @app.get("/")
 def root():
