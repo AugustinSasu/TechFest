@@ -9,11 +9,12 @@ from database.session import get_db
 from schemas.review import ReviewCreate, ReviewUpdate, ReviewOut
 from services.review_service import ReviewService
 
+
+
+#the full route to the endpoint will be api/reviews
 router = APIRouter(prefix="/reviews", tags=["reviews"])
 svc = ReviewService()
 
-
-# ---------- CRUD ----------
 @router.post("", response_model=ReviewOut, status_code=status.HTTP_201_CREATED)
 def create_review(payload: ReviewCreate, db: Session = Depends(get_db)):
     try:

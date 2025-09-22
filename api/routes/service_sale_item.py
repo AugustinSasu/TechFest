@@ -21,6 +21,8 @@ from schemas.service_sale_item import ServiceSaleItemCreate, ServiceSaleItemUpda
 from schemas.sale_order import SaleOrderOut
 from services.sale_order_service import SaleOrderService
 
+
+#the full route to the endpoint will be api/service-sale-items
 router = APIRouter(prefix="/service-sale-items", tags=["service-sale-items"])
 
 @router.get("/", response_model=List[ServiceSaleItemOut])

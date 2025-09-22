@@ -1,3 +1,7 @@
+# owner:valentin-alexa
+# CRATE_DATE: 2024-06-20 10:40
+# LAST MODIFY_DATE: --
+# MODIFY BY: --
 # models/review.py
 from sqlalchemy import Column, Integer, ForeignKey, Date, Text, func
 from sqlalchemy.orm import relationship

@@ -1,3 +1,8 @@
+# owner:POP MIRCEA STEFAN
+# CRATE_DATE: 2024-06-20 10:40
+# LAST MODIFY_DATE: 22/09/2025
+# MODIFY BY: POP MIRCEA STEFAN
+
 from sqlalchemy import Column, Integer, String, Numeric
 from database.engine import Base
 

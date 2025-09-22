@@ -14,6 +14,8 @@ from schemas.sale_stats import SalesOrderStatOut
 from services.sale_order_service import SaleOrderService
 from schemas.sale_order import SaleOrderCreate, SaleOrderUpdate, SaleOrderOut
 
+
+#the full route to the endpoint will be api/sale-orders
 router = APIRouter(prefix="/sale-orders", tags=["sale-orders"])
 
 def _norm_date(val: Optional[str], name: str) -> Optional[date]:

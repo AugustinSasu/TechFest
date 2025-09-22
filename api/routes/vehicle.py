@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 from database.session import get_db
 from services.vehicle_service import VehicleService
 from schemas.vehicle import VehicleCreate, VehicleUpdate, VehicleOut
-
+#the full route to the endpoint will be api/vehicles
 router = APIRouter(prefix="/vehicles", tags=["vehicles"])
 
 @router.get("/", response_model=List[VehicleOut])

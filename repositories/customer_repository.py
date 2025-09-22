@@ -1,7 +1,13 @@
+# owner:POP MIRCEA STEFAN
+# CRATE_DATE: 2024-06-20 10:40
+# LAST MODIFY_DATE: --
+# MODIFY BY: --
+
 from typing import List, Optional
 from sqlalchemy.orm import Session
 from sqlalchemy import select, desc, asc
 from models.customer import Customer
+
 
 class CustomerRepository:
     def create(self, db: Session, *, data: dict) -> Customer:

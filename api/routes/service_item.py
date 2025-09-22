@@ -16,7 +16,7 @@ from sqlalchemy.orm import Session
 from database.session import get_db
 from services.service_item_service import ServiceItemService
 from schemas.service_item import ServiceItemCreate, ServiceItemUpdate, ServiceItemOut
-
+#the full route to the endpoint will be api/service-items
 router = APIRouter(prefix="/service-items", tags=["service-items"])
 
 @router.get("/", response_model=List[ServiceItemOut])

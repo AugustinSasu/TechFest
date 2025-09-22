@@ -1,3 +1,7 @@
+# owner:ALEXA VALENTIN
+# CRATE_DATE: 2024-06-20 10:40
+# LAST MODIFY_DATE: --
+# MODIFY BY: --
 # repositories/employee_repository.py
 from typing import List, Optional
 from sqlalchemy.orm import Session

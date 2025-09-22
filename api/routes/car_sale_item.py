@@ -1,4 +1,5 @@
 # api/routes/car_sale_item.py
+
 from typing import List, Optional, Iterable
 import csv
 from io import StringIO
@@ -14,7 +15,7 @@ from services.car_sale_item_service import CarSaleItemService
 router = APIRouter(prefix="/car-sale-items", tags=["car-sale-items"])
 svc = CarSaleItemService()
 
-# ---------- CRUD ----------
+#the full route to the endpoint will be api/car-sale-items
 @router.post("", response_model=CarSaleItemOut, status_code=status.HTTP_201_CREATED)
 def create_car_sale_item(payload: CarSaleItemCreate, db: Session = Depends(get_db)):
     return svc.create(db, payload)

@@ -1,3 +1,7 @@
+# owner:POP MIRCEA STEFAN
+# CRATE_DATE: 2024-06-20 10:40
+# LAST MODIFY_DATE: --
+# MODIFY BY: --
 # schemas/sale_order.py
 # SCHEMAS: sale_order.py
 

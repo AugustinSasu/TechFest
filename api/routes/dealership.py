@@ -3,6 +3,10 @@
 # LAST MODIFY_DATE: --
 # MODIFY BY: --
 
+# Description: This module defines the API routes for managing dealership entities.
+# It includes endpoints for creating, retrieving, updating, deleting, and exporting dealerships.
+
+
 from fastapi import APIRouter, Depends, HTTPException, Response
 from fastapi.responses import JSONResponse, PlainTextResponse
 from typing import List, Optional
@@ -13,15 +17,30 @@ from services.dealership_service import DealershipService as Svc
 from schemas.dealership import DealershipCreate, DealershipUpdate, DealershipOut
 
 # Create a router for dealership endpoints, with a prefix and tag for grouping in docs
+#the full route to the endpoint will be api/dealerships
 router = APIRouter(prefix="/dealerships", tags=["dealerships"])
 
 # Create a new dealership
+#exemple request body
+# {
+#   "name": "AutoLux",
+#   "city": "Bucharest",
+#   "region": "Ilfov"
+# }
+
 @router.post("", response_model=DealershipOut, status_code=201)
 def create_dealership(payload: DealershipCreate, db: Session = Depends(get_db)):
     # Calls the service to create a dealership and returns the created object
     return Svc.create(db, payload)
 
 # Retrieve a dealership by its ID
+#exemple body
+# {
+#   "dealership_id": 1,
+#   "name": "AutoLux",
+#   "city": "Bucharest",
+#   "region": "Ilfov"
+# }
 @router.get("/{dealership_id}", response_model=DealershipOut)
 def get_dealership(dealership_id: int, db: Session = Depends(get_db)):
     # Fetches the dealership; raises 404 if not found
@@ -31,6 +50,23 @@ def get_dealership(dealership_id: int, db: Session = Depends(get_db)):
     return obj
 
 # List dealerships with optional filters and pagination
+#exemple of call
+# /api/dealerships?q=Auto&city=Bucharest&region=Ilfov&sort=asc&limit=10&offset=0
+#body exemple
+# [
+#   {
+#     "dealership_id": 1,
+#     "name": "AutoLux",
+#     "city": "Bucharest",
+#     "region": "Ilfov"
+#   },
+#   {
+#     "dealership_id": 2,
+#     "name": "CarZone",
+#     "city": "Cluj-Napoca",
+#     "region": "Cluj"
+#   }
+# ]
 @router.get("", response_model=List[DealershipOut])
 def list_dealerships(
     q: Optional[str] = None,      # Search query
@@ -45,6 +81,15 @@ def list_dealerships(
     return Svc.list(db, q=q, city=city, region=region, sort=sort, limit=limit, offset=offset)
 
 # Update an existing dealership
+#exemple body
+# {
+#   "name": "AutoLux Updated",
+#   "city": "Bucharest",
+#   "region": "Ilfov"
+# }
+# update the dealership with id 1
+#call example:
+# /api/dealerships/1
 @router.put("/{dealership_id}", response_model=DealershipOut)
 def update_dealership(dealership_id: int, payload: DealershipUpdate, db: Session = Depends(get_db)):
     # Updates the dealership; raises 404 if not found
@@ -65,12 +110,14 @@ def delete_dealership(dealership_id: int, db: Session = Depends(get_db)):
 # ---- Exports ----
 
 # Export all dealerships as JSON
+# returns a JSON response containing all dealerships
 @router.get("/_export/json")
 def export_json(db: Session = Depends(get_db)):
     # Returns all dealerships in JSON format
     return JSONResponse(content=Svc.export_json(db))
 
 # Export all dealerships as plain text
+# returns a plain text response containing all dealerships
 @router.get("/_export/txt")
 def export_txt(db: Session = Depends(get_db)):
     # Returns all dealerships in plain text format

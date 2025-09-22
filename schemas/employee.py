@@ -1,3 +1,7 @@
+# owner:POP MIRCEA STEFAN
+# CRATE_DATE: 2024-06-20 10:40
+# LAST MODIFY_DATE: --
+# MODIFY BY: --
 # schemas/employee.py
 from typing import Optional, Literal
 from pydantic import BaseModel, Field

@@ -1,3 +1,7 @@
+# owner:POP MIRCEA STEFAN
+# CRATE_DATE: 2024-06-20 10:40
+# LAST MODIFY_DATE: --
+# MODIFY BY: --
 # services/car_sale_item_service.py
 from typing import List, Optional
 from fastapi import HTTPException, status

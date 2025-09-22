@@ -1,3 +1,7 @@
+# owner:valentin-alexa
+# CRATE_DATE: 2024-06-20 10:40
+# LAST MODIFY_DATE: --
+# MODIFY BY: --
 # models/employee.py
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import Integer, String, ForeignKey

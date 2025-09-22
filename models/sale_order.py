@@ -1,5 +1,9 @@
+# owner:valentin-alexa
+# CRATE_DATE: 2024-06-20 10:40
+# LAST MODIFY_DATE: --
+# MODIFY BY: --
 # models/sale_order.py
-# MODEL: sale_order.py
+
 
 # -------------------------
 # Reprezintă header-ul unei comenzi de vânzare auto.
@@ -7,10 +11,6 @@
 # - 0 sau 1 `car_sale_item`
 # - 0 sau mai multe `service_sale_item`
 # Este legat de: `dealership`, `customer`, `employee (sales & manager)`
-
-# Autor: Alexa Cristian-Valentin
-# Data: 09-09-2024
-# -------------------------
 
 from sqlalchemy import Column, Integer, String, Date, Numeric, ForeignKey
 from database.engine import Base

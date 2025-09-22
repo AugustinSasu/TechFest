@@ -3,6 +3,9 @@
 # LAST MODIFY_DATE: --
 # MODIFY BY: --
 
+#description: This module defines the application settings using Pydantic.
+# It includes configurations for the app, Oracle database connection, and CORS settings.
+
 from pydantic_settings import BaseSettings
 from pydantic import AnyHttpUrl, field_validator
 from pathlib import Path

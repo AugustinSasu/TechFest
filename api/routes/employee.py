@@ -1,4 +1,13 @@
+# owner:POP MIRCEA STEFAN
+# CRATE_DATE: 2024-06-20 10:40
+# LAST MODIFY_DATE: --
+# MODIFY BY: --
 # api/routes/employees.py
+
+#description: This module defines the API routes for managing employee entities.
+# It includes endpoints for creating, retrieving, updating, deleting, exporting employees,
+# as well as registering and signing in employees without security measures.
+# The routes support filtering, sorting, and pagination.
 from typing import List, Optional, Iterable
 import csv
 from io import StringIO
@@ -14,14 +23,49 @@ from schemas.employee import (
 )
 from services.employee_service import EmployeeService
 
+#the full route to the endpoint will be api/employees
+
 router = APIRouter(prefix="/employees", tags=["employees"])
 svc = EmployeeService()
 
-# ---------- CRUD ----------
+# ---------- CRUD Operations ----------
+# Create a new employee
+# Example request body:
+# {
+#   "db_username": "jdoe",
+#   "password": "securepassword",
+#   "full_name": "John Doe",
+#   "role_code": "SALES",
+#   "dealership_id": 1
+# }
+#exemple of call:
+# /api/employees
+# Example response body:
+# {
+#   "employee_id": 1,
+#   "db_username": "jdoe",
+#   "full_name": "John Doe",
+#   "role_code": "SALES",
+#   "dealership_id": 1
+# }
 @router.post("", response_model=EmployeeOut, status_code=status.HTTP_201_CREATED)
 def create_employee(payload: EmployeeCreate, db: Session = Depends(get_db)):
     return svc.create(db, payload)
-
+# List employees with optional filtering, sorting, and pagination
+# Example of call:
+# /api/employees?full_name=John&role_code=SALES&dealership
+# Example response body:
+# [
+#   {
+#     "employee_id": 1,
+#     "db_username": "jdoe",
+#     "full_name": "John Doe",
+#     "role_code": "SALES",
+#     "dealership_id": 1
+#   },
+#   {
+#    ...
+#   }
 @router.get("", response_model=List[EmployeeOut])
 def list_employees(
     full_name: Optional[str] = Query(None, description="Filtru LIKE după nume"),
@@ -41,7 +85,17 @@ def list_employees(
         skip=skip,
         limit=limit,
     )
-
+# Retrieve an employee by ID
+# Example response body:
+# {
+#   "employee_id": 1,
+#   "db_username": "jdoe",
+#   "full_name": "John Doe",
+#   "role_code": "SALES",
+#   "dealership_id": 1
+# }
+#exemple of call:
+# /api/employees/1
 @router.get("/{employee_id}", response_model=EmployeeOut)
 def get_employee(employee_id: int = Path(..., ge=1), db: Session = Depends(get_db)):
     obj = svc.get(db, employee_id)
@@ -49,6 +103,23 @@ def get_employee(employee_id: int = Path(..., ge=1), db: Session = Depends(get_d
         raise HTTPException(status_code=404, detail="Employee not found")
     return obj
 
+# Update an employee by ID
+# Example request body:
+# {
+#   "full_name": "Jane Doe",
+#   "role_code": "MANAGER",
+#   "dealership_id": 2
+# }
+# Example response body:
+# {
+#   "employee_id": 1,
+#   "db_username": "jdoe",
+#   "full_name": "Jane Doe",
+#   "role_code": "MANAGER",
+#   "dealership_id": 2
+# }
+#exemple of call:
+# /api/employees/1
 @router.put("/{employee_id}", response_model=EmployeeOut)
 def update_employee(employee_id: int, payload: EmployeeUpdate, db: Session = Depends(get_db)):
     obj = svc.update(db, employee_id, payload)
@@ -56,6 +127,8 @@ def update_employee(employee_id: int, payload: EmployeeUpdate, db: Session = Dep
         raise HTTPException(status_code=404, detail="Employee not found")
     return obj
 
+# Delete an employee by ID
+# Example of call: DELETE /api/employees/1
 @router.delete("/{employee_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_employee(employee_id: int, db: Session = Depends(get_db)):
     ok = svc.delete(db, employee_id)
