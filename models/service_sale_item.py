@@ -7,7 +7,7 @@
 # - `sale_order` (prin order_id)
 # - `service_item` (prin service_id)
 #
-# 🧠 Observație: Coloana `line_total` este VIRTUALĂ în Oracle (qty * unit_price),
+# Observație: Coloana `line_total` este VIRTUALĂ în Oracle (qty * unit_price),
 # deci nu trebuie să o setăm la inserare, doar să o citim la citire (read-only).
 
 from sqlalchemy import Column, Integer, Numeric, ForeignKey
@@ -23,4 +23,4 @@ class ServiceSaleItem(Base):
     unit_price = Column(Numeric(12, 2), nullable=False)
     # line_total este definit virtual în Oracle, deci îl tratăm doar la citire (nu îl includem în CREATE)
 
-    # ⚠️ Dacă dorim să îl includem în response_model, îl calculăm manual în service / schema
+    # ️ Dacă dorim să îl includem în response_model, îl calculăm manual în service / schema

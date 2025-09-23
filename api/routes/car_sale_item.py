@@ -1,25 +1,53 @@
 # api/routes/car_sale_item.py
+# owner:POP MIRCEA STEFAN
+# CRATE_DATE: 2024-06-20 10:40
+# LAST MODIFY_DATE: --
+# MODIFY BY: --
+
+# endpoints for car_sale_items
+# the full route to the endpoint will be api/car-sale-items
+# supports filtering, sorting, pagination, and export to JSON and CSV
 
 from typing import List, Optional, Iterable
 import csv
 from io import StringIO
-
 from fastapi import APIRouter, Depends, HTTPException, Query, Path, status
 from fastapi.responses import StreamingResponse, JSONResponse
 from sqlalchemy.orm import Session
-
 from database.session import get_db
 from schemas.car_sale_item import CarSaleItemCreate, CarSaleItemUpdate, CarSaleItemOut
 from services.car_sale_item_service import CarSaleItemService
 
+
+#the full route to the endpoint will be api/car-sale-items
 router = APIRouter(prefix="/car-sale-items", tags=["car-sale-items"])
 svc = CarSaleItemService()
 
-#the full route to the endpoint will be api/car-sale-items
+
+#call exemple: POST /api/car-sale-items
+#body: {"order_id": 1, "vehicle_id": 2, "unit_price": 15000.00}
 @router.post("", response_model=CarSaleItemOut, status_code=status.HTTP_201_CREATED)
 def create_car_sale_item(payload: CarSaleItemCreate, db: Session = Depends(get_db)):
     return svc.create(db, payload)
+#call exemple: GET /api/car-sale-items?order_id=1&min_price=10000&max_price=20000&sort_by=order_id&sort=desc&skip=0&limit=50
+# returns a list of car sale items, filtered by order_id and price range, sorted and paginated
+# all query parameters are optional
+# if no parameters are provided, returns the first 100 items sorted by item_id ascending
+# supports filtering by order_id, min_price, max_price
+# supports sorting by item_id or order_id, ascending or descending
 
+#body response exemple:
+# [
+#   {
+#     "item_id": 1,
+#     "order_id": 1,
+#     "vehicle_id": 2,
+#     "unit_price": 15000.0
+#   },
+#   {
+#     ...,
+#   }
+# ]
 @router.get("", response_model=List[CarSaleItemOut])
 def list_car_sale_items(
     order_id: Optional[int] = Query(None, ge=1, description="Filtru după order_id"),
@@ -43,6 +71,17 @@ def list_car_sale_items(
     )
     return [CarSaleItemOut.model_validate(r) for r in rows]
 
+#call exemple: GET /api/car-sale-items/1
+# returns a single car sale item by item_id
+# if the item does not exist, returns 404
+#body response exemple:
+# {
+#   "item_id": 1,
+#   "order_id": 1,
+#   "vehicle_id": 2,
+#   "unit_price": 15000.0
+# }
+
 @router.get("/{item_id}", response_model=CarSaleItemOut)
 def get_car_sale_item(item_id: int = Path(..., ge=1), db: Session = Depends(get_db)):
     obj = svc.get(db, item_id)
@@ -50,12 +89,29 @@ def get_car_sale_item(item_id: int = Path(..., ge=1), db: Session = Depends(get_
         raise HTTPException(status_code=404, detail="CarSaleItem not found")
     return obj
 
+#call exemple: PUT /api/car-sale-items/1
+# body: {"order_id": 1, "vehicle_id": 3, "unit
+# _price": 16000.00}
+# updates an existing car sale item by item_id
+# if the item does not exist, returns 404
+#body response exemple:
+# {
+#   "item_id": 1,
+#   "order_id": 1,
+#   "vehicle_id": 3,
+#   "unit_price": 16000.0
+# }
 @router.put("/{item_id}", response_model=CarSaleItemOut)
 def update_car_sale_item(item_id: int, payload: CarSaleItemUpdate, db: Session = Depends(get_db)):
     obj = svc.update(db, item_id, payload)
     if not obj:
         raise HTTPException(status_code=404, detail="CarSaleItem not found")
     return obj
+
+#call exemple: DELETE /api/car-sale-items/1
+# deletes an existing car sale item by item_id
+# if the item does not exist, returns 404
+# returns 204 No Content on success
 
 @router.delete("/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_car_sale_item(item_id: int, db: Session = Depends(get_db)):
