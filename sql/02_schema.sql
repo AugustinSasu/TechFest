@@ -95,9 +95,10 @@ CREATE TABLE service_sale_item (
 
 -- Basic privileges at the object level (further restricted by RLS/VPD below)
 GRANT SELECT ON dealership  TO sales_role, manager_role;
-GRANT SELECT ON employee    TO manager_role;         -- managers can see team roster
-GRANT SELECT ON customer    TO sales_role, manager_role;
-GRANT SELECT ON vehicle     TO sales_role, manager_role;
+-- managers can see team roster
+GRANT SELECT ON employee TO manager_role;         
+GRANT SELECT ON customer TO sales_role, manager_role;
+GRANT SELECT ON vehicle TO sales_role, manager_role;
 GRANT SELECT ON service_item TO sales_role, manager_role;
 
 GRANT SELECT, INSERT, UPDATE ON sale_order TO sales_role, manager_role;

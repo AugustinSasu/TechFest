@@ -13,6 +13,7 @@ CREATE ROLE app_role;
 -- Example users (one salesperson, one manager)
 CREATE USER sales_anna IDENTIFIED BY "sales_anna";
 CREATE USER mgr_bob    IDENTIFIED BY "mgr_bob";
+
 GRANT CREATE SESSION TO sales_anna, mgr_bob;
 
 GRANT sales_role   TO sales_anna;

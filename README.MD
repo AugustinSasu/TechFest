@@ -1,9 +1,5 @@
 # Build and run the DB Container:
 
-docker-compose down
-
-docker volume rm vwdb_vwvolume
-
 docker compose up -d
 
 # Install requirements:
@@ -20,7 +16,7 @@ docker cp 02_schema.sql vw-db:/tmp/02_schema.sql
 
 docker cp 03_populate.sql vw-db:/tmp/03_populate.sql
 
-docker cp 04_populate2.sql vw-db:/tmp/04_populate2.sql
+docker cp 04_vector_index.sql vw-db:/tmp/04_vector_index.sql
 
 cd ..
 
@@ -36,21 +32,11 @@ sqlplus / as sysdba
 
 @/tmp/01_users_roles.sql
 
-exit
-
-# Enter SQL Plus as APP_OWNER:
-
-sqlplus app_owner/app_owner@localhost:1521/FREEPDB1
-
-# Run the rest of the scripts:
-
 @/tmp/02_schema.sql
+
 @/tmp/03_populate.sql
 
-Enter value for labor: 10
-
-@/tmp/04_populate2.sql
-
+@/tmp/04_vector_index.sql
 
 exit
 
@@ -65,3 +51,11 @@ python load_embeddings.py
 cd ..
 
 python api.py
+
+# To rebuild:
+
+docker-compose down
+
+docker volume rm vwdb_vwvolume (run docker volume ls to see your volume name)
+
+and repeat the steps above
